@@ -1,11 +1,15 @@
-import React from 'react';
+import React, {Component} from 'react';
 import './App.css';
-import Map from './Map';
+import { Route, Switch, withRouter, Redirect } from 'react-router-dom';
+import { connect } from 'react-redux';
+import Map from './containers/Map';
 
-const App = () => {
-  return (
-    <Map />
-  );
+class App extends Component {
+
+
+  render(){
+    return <Map />;
+  }
 }; 
 
-export default App;
+export default withRouter(App);
