@@ -32,5 +32,13 @@ module.exports = {
         WHERE lower(adm1_name_) ilike $1`;
     const result = await client.query(boundaryQuery, [name]);
     return result.rows;
+  },
+
+  getAllCitiesName: async () => {
+    const nameQuery = `
+      SELECT adm1_name, id, lat, lng
+      FROM public."vnProvinces"`;
+    const result = await client.query(nameQuery);
+    return result.rows;
   }
 };
