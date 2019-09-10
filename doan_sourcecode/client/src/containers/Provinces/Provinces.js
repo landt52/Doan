@@ -9,6 +9,7 @@ class Provinces extends Component {
         lat: null,
         lng: null
     }
+
     async componentDidMount(){
         const provinces = await axios('/api/citiesName');
         this.setState({provinces: provinces.data.cities, lat: provinces.data.lat, lng: provinces.data.lng});
@@ -21,6 +22,7 @@ class Provinces extends Component {
                                               data={this.state.provinces}
                                               lat={this.state.lat}
                                               lng={this.state.lng}
+                                              type={"provinces"}
                                             />
                                           );
         return (

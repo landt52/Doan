@@ -396,7 +396,28 @@ module.exports = function(webpackEnv) {
             // By default we support CSS Modules with the extension .module.css
             {
               test: cssRegex,
+              exclude: [/src/],
+              use: getStyleLoaders({
+                importLoaders: 1,
+              })
+            },
+            {
+              test: cssRegex,
               exclude: cssModuleRegex,
+              use: getStyleLoaders({
+                importLoaders: 1,
+                modules: true,
+                localIdentName: '[name]__[local]__[hash:base64:5]'
+              }),
+              // Don't consider CSS imports dead code even if the
+              // containing package claims to have no side effects.
+              // Remove this when webpack adds a warning or an error for this.
+              // See https://github.com/webpack/webpack/issues/6571
+              sideEffects: true
+            },
+            {
+              test: cssRegex,
+              exclude: [/node_modules/],
               use: getStyleLoaders({
                 importLoaders: 1,
                 modules: true,

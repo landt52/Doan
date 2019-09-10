@@ -27,7 +27,9 @@ class Map extends Component {
     let boundary = await axios('/api/vnBoundaries');
 
     if(this.props.provinceName){
-      boundary = await axios(`/api/vnBoundaries/${this.props.provinceName}`);
+      boundary = await axios(
+        `/api/vnBoundaries/${this.props.provinceName}`
+      );
     }
 
     L.geoJSON(boundary.data.boundaries, {
@@ -49,7 +51,7 @@ class Map extends Component {
 
   onEachDistrict = (feature, layer) => {
     let data = this.getInfoFrom(feature.properties.data).join(' <br>');
-    layer.bindPopup(data, { closeButton: false });
+    layer.bindPopup(feature.properties.name.concat(data), { closeButton: false });
   }
 
   getInfoFrom = (object) => {
