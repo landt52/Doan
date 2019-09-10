@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import L from 'leaflet';
 import axios from 'axios';
-import queryString from 'query-string';
 
 class Map extends Component {
   state = {
@@ -49,8 +48,22 @@ class Map extends Component {
   }
 
   onEachDistrict = (feature, layer) => {
-    layer.bindPopup(feature.properties.name, { closeButton: false });
+    let data = this.getInfoFrom(feature.properties.data).join(' <br>');
+    layer.bindPopup(data, { closeButton: false });
   }
+
+  getInfoFrom = (object) => {
+    var popupFood = [];
+    for (var key in object) {
+      if (object.hasOwnProperty(key)) {
+        var stringLine = "The " + key + " is " + object[key];
+        popupFood.push(stringLine);
+      }
+    }
+    return popupFood;
+  }
+
+
 
   render() {
     return <div id='map' style={{height: "92vh",

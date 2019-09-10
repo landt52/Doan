@@ -29,7 +29,7 @@ module.exports = {
     const boundaryQuery = `
 	    	SELECT ST_AsGeoJSON(geom), id, adm2_name_
         FROM public."vnDistricts"
-        WHERE lower(adm1_name_) ilike $1`;
+        WHERE adm1_name_ ilike $1`;
     const result = await client.query(boundaryQuery, [name]);
     return result.rows;
   },

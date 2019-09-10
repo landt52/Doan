@@ -7,8 +7,7 @@ const Cards = props => {
     <div className={classes.card}>
       <Link
         to={{pathname: `/provinces/${props.data.name
-          .replace(/\s|-|\./g, '')
-          .toLowerCase()}`, search: `?lat=${props.data.lat}&lng=${props.data.lng}` }}
+          .replace(/\s|-|\./g, '')}`, search: `?lat=${props.data.lat}&lng=${props.data.lng}` }}
       >
         {props.data.name}
       </Link>
