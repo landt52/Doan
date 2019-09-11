@@ -1,12 +1,10 @@
 const express = require("express");
 const mongoose = require('mongoose');
 const cors = require("cors");
-const csv = require('csvtojson');
-const multer = require('multer');
 const bodyParser = require("body-parser");
-const fs = require('fs');
 const path = require("path");
 require('dotenv').config();
+
 
 const DB = process.env.MONGODB.replace(
   '<PASSWORD>',
@@ -19,6 +17,7 @@ mongoose.connect(DB, {useNewUrlParser: true, useCreateIndex: true, useFindAndMod
 const boundaryRouter = require('./routes/boundaryRoutes');
 const citiesNameRouter = require('./routes/citiesNameRoutes');
 const districtsNameRouter = require('./routes/districtsNameRoutes');
+const uploadDistrictsInfoRouter = require('./routes/uploadDistrictsInfoRoutes');
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -28,44 +27,10 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 app.use(cors());
 
-app.use(express.static(path.join(__dirname, 'client/build')));
-// app.get('*', (req, res) => {
-//     res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
-// });
-
-const storage = multer.diskStorage({
-  destination: function(req, file, cb) {
-    cb(null, 'models');
-  },
-  filename: function(req, file, cb) {
-    cb(null, Date.now() + '-' + file.originalname);
-  }
-});
-
-const upload = multer({ storage: storage }).single('file');
-
-app.post('/api/districts/:districtID', async (req, res) => {
-  await upload(req, res, async (err) => {
-    if(!req.file){
-      return res.status(500).json(err);
-    }
-    if (err instanceof multer.MulterError) {
-      return res.status(500).json(err);
-    } else if (err) {
-      return res.status(500).json(err);
-    }
-    if(req.file){
-      await csv()
-        .fromFile(req.file.path)
-        .then(jsonObj => {
-          console.log(jsonObj);
-        });
-    }
-  });
-})
 app.use('/api/vnBoundaries', boundaryRouter);
 app.use('/api/citiesName', citiesNameRouter);
 app.use('/api/districtsName', districtsNameRouter);
+app.use('/api/districts', uploadDistrictsInfoRouter);
 
 app.listen(port, err => {
     if(err) throw err;

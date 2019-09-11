@@ -37,7 +37,6 @@ class DistrictUploadPage extends Component {
       }
     )
       .then(res => {
-        console.log(res);
         toast.success('Upload thành công');
       })
       .catch(err => {

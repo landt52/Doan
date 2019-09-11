@@ -34,7 +34,7 @@ exports.getProvinceBoundary = async (req, res) => {
       let geojson = JSON.parse(row.st_asgeojson);
       geojson.id = row.id;
       geojson.properties = { name: row.adm2_name_ };
-      geojson.properties.data = {something: district[idx].districtname}
+      geojson.properties.data = {something: district[idx].data}
       return geojson
     });
 
