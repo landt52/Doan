@@ -1,8 +1,10 @@
 const express = require("express");
 const mongoose = require('mongoose');
 const cors = require("cors");
-var multer = require('multer');
+const csv = require('csvtojson');
+const multer = require('multer');
 const bodyParser = require("body-parser");
+const fs = require('fs');
 const path = require("path");
 require('dotenv').config();
 
@@ -42,14 +44,23 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage }).single('file');
 
-app.post('/api/districts/:districtID', (req, res) => {
-  upload(req, res, function(err) {
+app.post('/api/districts/:districtID', async (req, res) => {
+  await upload(req, res, async (err) => {
+    if(!req.file){
+      return res.status(500).json(err);
+    }
     if (err instanceof multer.MulterError) {
       return res.status(500).json(err);
     } else if (err) {
       return res.status(500).json(err);
     }
-    return res.status(200).send(req.file);
+    if(req.file){
+      await csv()
+        .fromFile(req.file.path)
+        .then(jsonObj => {
+          console.log(jsonObj);
+        });
+    }
   });
 })
 app.use('/api/vnBoundaries', boundaryRouter);

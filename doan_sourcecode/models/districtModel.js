@@ -13,6 +13,9 @@ const districtSchema = new mongoose.Schema({
     districtname: {
         type: String,
         required: [true, '1 quan - huyen can co ten']
+    },
+    data: {
+        type: Object
     }
 })
 
