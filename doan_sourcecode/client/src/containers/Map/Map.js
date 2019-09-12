@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import L from 'leaflet';
-import * as actions from '../../store/actions/index';
 import Spinner from '../../components/Spinner/Spinner';
 
 class Map extends Component {
@@ -20,29 +19,21 @@ class Map extends Component {
     });
 
     this.map.zoomControl.setPosition('bottomright'); 
-
-    // if(this.props.provinceName){
-    //   this.props.loadMapOfVNStart();
-    //   boundary = await axios(
-    //     `/api/vnBoundaries/${this.props.provinceName}`
-    //   );
-    // }else{
-    //   boundary = await axios('/api/vnBoundaries');
-    // }
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.lat !== this.props.lat
-        || nextProps.lng !== this.props.lng) {
-        this.map.setView({lat: nextProps.lat, lng: nextProps.lng});
-        L.geoJSON(nextProps.boundary.boundaries, {
-          style: {
-            color: '#225',
-            weight: 1,
-            opacity: 0.65
-          },
-          onEachFeature: this.onEachDistrict
-        }).addTo(this.map);
+    if (!nextProps.loading ||
+      nextProps.lat !== this.props.lat ||
+      nextProps.lng !== this.props.lng ){
+      this.map.setView({ lat: nextProps.lat, lng: nextProps.lng });
+      L.geoJSON(nextProps.boundary.boundaries, {
+        style: {
+          color: '#225',
+          weight: 1,
+          opacity: 0.65
+        },
+        onEachFeature: this.onEachDistrict
+      }).addTo(this.map);
     }
   }
 
@@ -87,10 +78,4 @@ const mapStateToProps = (state) => {
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    loadMapOfVNStart: () => dispatch(actions.loadMapOfVNStart())
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Map);
+export default connect(mapStateToProps)(Map);

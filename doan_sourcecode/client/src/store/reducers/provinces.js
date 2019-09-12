@@ -12,7 +12,7 @@ const reducer = (state = initialState, action) => {
           return Object.assign({}, state, {err: null, loading: true})
       case actionTypes.LOAD_PROVINCES_CARD_SUCCESS:
           return Object.assign({}, state, {
-              provinces: action.cities,
+              provinces: action.cities.map(city => ({...city})),
               loading: false,
               err: null
           })

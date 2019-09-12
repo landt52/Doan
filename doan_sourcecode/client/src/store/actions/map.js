@@ -7,6 +7,29 @@ export const loadMapOfVNStart = () => {
     }
 }
 
+export const loadMapOfVNSuccess = (vnBoundaries) => {
+    return {
+        type: actionTypes.LOAD_MAP_OF_VN_SUCCESS,
+        boundary: vnBoundaries.data
+    }
+}
+
+export const loadMapOfVNFailed = err => {
+  return {
+    type: actionTypes.LOAD_MAP_OF_VN_FAILED,
+    err: err
+  };
+};
+
+export const loadMapOfVN = () => dispatch => {
+    dispatch(loadMapOfVNStart());
+    axios(`/api/vnBoundaries`)
+    .then(res => dispatch(loadMapOfVNSuccess(res)))
+    .catch(err => dispatch(loadMapOfVNFailed(err)))
+};
+
+
+
 export const loadDistrictDataStart = () => {
     return {
         type: actionTypes.LOAD_DISTRICTS_DATA_START
@@ -24,7 +47,7 @@ export const loadDistrictDataSuccess = (values, districtData) => {
 
 export const loadDistrictDataFailed = err => {
   return {
-    type: actionTypes.LOAD_PROVINCES_CARD_FAILED,
+    type: actionTypes.LOAD_DISTRICTS_DATA_FAILED,
     err: err
   };
 };

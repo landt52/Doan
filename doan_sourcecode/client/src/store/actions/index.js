@@ -1,5 +1,5 @@
 export {
-    loadMapOfVNStart,
+    loadMapOfVN,
     loadDistrictsData
 } from './map';
 
