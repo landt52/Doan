@@ -10,7 +10,7 @@
     "server": "nodemon server.js",
     "build": "cd client && npm run build",
     "dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\"",
-    "start": "node server.js",
+    "start": "set NODE_ENV=development&& nodemon server.js",
     "heroku-postbuild": "cd client && npm install && npm install --only=dev --no-shrinkwrap && npm run build"
   },
   "dependencies": {
@@ -23,6 +23,7 @@
     "dotenv": "^7.0.0",
     "express": "^4.16.4",
     "mongoose": "^5.6.13",
+    "morgan": "^1.9.1",
     "multer": "^1.4.2",
     "pg": "^7.12.1"
   },

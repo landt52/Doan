@@ -1,27 +1,20 @@
 import React, { Component } from 'react';
-import axios from 'axios';
 import Cards from '../../components/Cards/Cards';
 import Spinner from '../../components/Spinner/Spinner';
+import {connect} from 'react-redux'; 
+import * as actionTypes from '../../store/actions/index';
 
 class Provinces extends Component {
-    state = {
-        provinces: null,
-        lat: null,
-        lng: null
-    }
-
-    async componentDidMount(){
-        const provinces = await axios('/api/citiesName');
-        this.setState({provinces: provinces.data.cities, lat: provinces.data.lat, lng: provinces.data.lng});
+    componentDidMount(){
+        this.props.loadProvincesCardData();
     }
 
     render() {
-        let cards = <Spinner />
-        if(this.state.provinces !== null) cards = (
+        let cards = this.props.err ? <p>Có lỗi xảy ra</p> : <Spinner />;
+        
+        if(this.props.provinces !== null) cards = (
                                             <Cards
-                                              data={this.state.provinces}
-                                              lat={this.state.lat}
-                                              lng={this.state.lng}
+                                              data={this.props.provinces}
                                               type={"provinces"}
                                             />
                                           );
@@ -34,4 +27,18 @@ class Provinces extends Component {
     }
 }
 
-export default Provinces;
+const mapStateToProps = state => {
+    return {
+        provinces: state.provinces.provinces,
+        err: state.provinces.err,
+        loading: state.provinces.loading
+    }
+}
+
+const mapDispatchToProps = dispatch => {
+    return {
+        loadProvincesCardData: () => dispatch(actionTypes.loadProvincesCardData())
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Provinces);

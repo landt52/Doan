@@ -3,7 +3,6 @@ import './App.css';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Route, Switch, withRouter, Redirect } from 'react-router-dom';
-import { connect } from 'react-redux';
 import Map from './containers/Map/Map';
 import Navigation from './hoc/Navigation/Navigation';
 import Districts from './containers/Districts/Districts';
@@ -25,7 +24,7 @@ class App extends Component {
             path='/'
             exact
             component={() => {
-              return <Map lat={16.830832} lng={107.067261} zoom={6} />;
+              return <Map zoom={6}/>;
             }}
           />
           <Redirect to='/' />

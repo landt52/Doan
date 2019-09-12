@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require('mongoose');
 const cors = require("cors");
 const bodyParser = require("body-parser");
+const morgan = require('morgan');
 const path = require("path");
 require('dotenv').config();
 
@@ -26,6 +27,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
 app.use(cors());
+if(process.env.NODE_ENV.trim() === 'development') app.use(morgan('dev'));
 
 app.use('/api/vnBoundaries', boundaryRouter);
 app.use('/api/citiesName', citiesNameRouter);

@@ -49,7 +49,6 @@ exports.uploadDistrictsModel = async (req, res) => {
               const newDistrictData = await District.findByIdAndUpdate(req.params.districtID, {data: obj}, {
                   new: true
               })
-              console.log(newDistrictData);
             });
             fs.unlinkSync(req.file.path);
             res.status(200).send({ status: 'success' });

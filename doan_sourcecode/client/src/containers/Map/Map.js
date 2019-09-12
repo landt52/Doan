@@ -1,15 +1,13 @@
 import React, {Component} from 'react';
+import {connect} from 'react-redux';
 import L from 'leaflet';
-import axios from 'axios';
+import * as actions from '../../store/actions/index';
+import Spinner from '../../components/Spinner/Spinner';
 
 class Map extends Component {
-  state = {
-    lat: 16.830832,
-    lng: 107.067261
-  }
   async componentDidMount() {
     this.map = L.map('map', {
-      center: [this.state.lat, this.state.lng],
+      center: [this.props.lat, this.props.lng],
       zoom: this.props.zoom,
       maxZoom: 20,
       minZoom: 6,
@@ -23,29 +21,28 @@ class Map extends Component {
 
     this.map.zoomControl.setPosition('bottomright'); 
 
-    
-    let boundary = await axios('/api/vnBoundaries');
-
-    if(this.props.provinceName){
-      boundary = await axios(
-        `/api/vnBoundaries/${this.props.provinceName}`
-      );
-    }
-
-    L.geoJSON(boundary.data.boundaries, {
-      style: {
-        color: '#225',
-        weight: 1,
-        opacity: 0.65
-      },
-      onEachFeature: this.onEachDistrict
-    }).addTo(this.map);
+    // if(this.props.provinceName){
+    //   this.props.loadMapOfVNStart();
+    //   boundary = await axios(
+    //     `/api/vnBoundaries/${this.props.provinceName}`
+    //   );
+    // }else{
+    //   boundary = await axios('/api/vnBoundaries');
+    // }
   }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.lat !== this.props.lat
         || nextProps.lng !== this.props.lng) {
         this.map.setView({lat: nextProps.lat, lng: nextProps.lng});
+        L.geoJSON(nextProps.boundary.boundaries, {
+          style: {
+            color: '#225',
+            weight: 1,
+            opacity: 0.65
+          },
+          onEachFeature: this.onEachDistrict
+        }).addTo(this.map);
     }
   }
 
@@ -65,12 +62,35 @@ class Map extends Component {
     return popupFood;
   }
 
-
-
   render() {
-    return <div id='map' style={{height: "92vh",
-  width: "100vw", marginTop: "0px"}}></div>;
+    let map;
+    map = this.props.loading ? (
+      <div>
+        <Spinner />
+      </div>
+    ) : (
+      <div id='map' style={{height: "92vh",
+      width: "100vw", marginTop: "0px"}}></div>
+    );
+
+    return map
+    }
+}
+
+const mapStateToProps = (state) => {
+  return {
+    lat: state.map.lat,
+    lng: state.map.lng,
+    boundary: state.map.boundary,
+    err: state.map.err,
+    loading: state.map.loading
   }
 }
 
-export default Map;
+const mapDispatchToProps = (dispatch) => {
+  return {
+    loadMapOfVNStart: () => dispatch(actions.loadMapOfVNStart())
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Map);

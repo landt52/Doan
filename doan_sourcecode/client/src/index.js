@@ -6,28 +6,30 @@ import { Provider } from 'react-redux';
 import { createStore, applyMiddleware, compose, combineReducers } from 'redux';
 import thunk from 'redux-thunk';
 import App from './App';
+import mapReducer from './store/reducers/map';
+import provincesReducer from './store/reducers/provinces';
+import logger from 'redux-logger'
 
 import * as serviceWorker from './serviceWorker';
 
 const composeEnhancers = process.env.NODE_ENV === 'development' ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ : null || compose;
 
-const rootReducer = combineReducers({});
+const rootReducer = combineReducers({
+  map: mapReducer,
+  provinces: provincesReducer
+});
 
 const store = createStore(
   rootReducer,
-  composeEnhancers(applyMiddleware(thunk))
+  composeEnhancers(applyMiddleware(thunk, logger))
 );
 
 const app = (
-//   <Provider store={store}>
-//     <BrowserRouter>
-//       <App />
-//     </BrowserRouter>
-//   </Provider>
-
+  <Provider store={store}>
     <BrowserRouter>
       <App />
     </BrowserRouter>
+  </Provider>
 );
 
 ReactDOM.render(app, document.getElementById('root'));

@@ -9,3 +9,6 @@ Upload file dữ liệu cho từng tỉnh
 
 11/9/2019
 Hiển thị thông tin của từng tỉnh sau khi upload dữ liệu
+
+12/9/2019
+Chuyển state lên store redux
