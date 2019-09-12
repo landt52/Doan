@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import L from 'leaflet';
 import Spinner from '../../components/Spinner/Spinner';
+import classes from './Map.css';
 
 class Map extends Component {
   async componentDidMount() {
@@ -38,19 +39,31 @@ class Map extends Component {
   }
 
   onEachDistrict = (feature, layer) => {
-    let data = this.getInfoFrom(feature.properties.data).join(' <br>');
-    layer.bindPopup(feature.properties.name.concat(data), { closeButton: false });
+    layer.bindPopup(feature.properties.name, { closeButton: false });
+    if(!feature.properties.data) return;
+    if(feature.properties.data.something){
+        let popupContent = this.getInfoFrom(
+          feature.properties.data.something,
+          `${classes.table}`
+        );  
+        layer.bindPopup(popupContent, { closeButton: false }
+        );
+    }
   }
 
-  getInfoFrom = (object) => {
-    var popupFood = [];
-    for (var key in object) {
-      if (object.hasOwnProperty(key)) {
-        var stringLine = "The " + key + " is " + object[key];
-        popupFood.push(stringLine);
-      }
-    }
-    return popupFood;
+  getInfoFrom = (object, className) => {
+    let cols = Object.entries(object);
+
+    let bodyRows = '';
+
+    className = className || '';
+    cols.map(row => {
+      return bodyRows += '<tr><td>' + row[0] + '</td><td>' + row[1] + '</td></tr>';
+    });
+
+    return (
+      '<table class="' + className + '"><tbody>' + bodyRows + '</tbody></table>'
+    );
   }
 
   render() {

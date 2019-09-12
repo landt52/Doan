@@ -8,6 +8,7 @@ import thunk from 'redux-thunk';
 import App from './App';
 import mapReducer from './store/reducers/map';
 import provincesReducer from './store/reducers/provinces';
+import districtsReducer from './store/reducers/districts';
 import logger from 'redux-logger'
 
 import * as serviceWorker from './serviceWorker';
@@ -16,7 +17,8 @@ const composeEnhancers = process.env.NODE_ENV === 'development' ? window.__REDUX
 
 const rootReducer = combineReducers({
   map: mapReducer,
-  provinces: provincesReducer
+  provinces: provincesReducer,
+  districts: districtsReducer
 });
 
 const store = createStore(

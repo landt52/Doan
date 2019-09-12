@@ -6,3 +6,7 @@ export {
 export {
     loadProvincesCardData
 } from './provinces';
+
+export {
+    loadDistrictsName
+} from './districts';

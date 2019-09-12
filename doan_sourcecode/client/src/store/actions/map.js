@@ -28,8 +28,6 @@ export const loadMapOfVN = () => dispatch => {
     .catch(err => dispatch(loadMapOfVNFailed(err)))
 };
 
-
-
 export const loadDistrictDataStart = () => {
     return {
         type: actionTypes.LOAD_DISTRICTS_DATA_START

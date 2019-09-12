@@ -1,29 +1,24 @@
 import React, { Component } from 'react';
-import axios from 'axios';
 import Cards from '../../components/Cards/Cards';
 import Spinner from '../../components/Spinner/Spinner';
+import {connect} from 'react-redux';
+import * as actions from '../../store/actions/index';
 
 class Districts extends Component {
-  state = {
-    districts: null,
-  }
-
-  async componentDidMount() {
-    const districts = await axios('/api/districtsName');
-    this.setState({
-      districts: districts.data.district,
-    });
+  componentDidMount() {
+    this.props.loadDistrictName();
   }
 
   render() {
     let cards = <Spinner />;
-    if (this.state.districts !== null)
+    if (this.props.districts !== null)
       cards = (
         <Cards
-          data={this.state.districts}
+          data={this.props.districts}
           type={"districts"}
         />
       );
+      
     return (
       <div>
         <h1>Provinces</h1>
@@ -33,4 +28,16 @@ class Districts extends Component {
   }
 }
 
-export default Districts
+const mapStateToProps = state => {
+  return {
+    districts: state.districts.districts
+  }
+}
+
+const mapDispatchToProps = dispatch => {
+  return {
+    loadDistrictName: () => dispatch(actions.loadDistrictsName())
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Districts);

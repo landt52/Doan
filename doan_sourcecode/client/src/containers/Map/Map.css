@@ -2,3 +2,14 @@
   height: 100vh;
   width: 100vw;
 }
+
+.table{
+  display: block;
+  height: 20vh;
+  overflow-y: scroll;
+  border-collapse: collapse;
+} 
+
+tr:nth-of-type(even) {
+		background: rgba(0,0,0, 0.1);
+}

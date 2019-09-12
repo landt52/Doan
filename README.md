@@ -11,4 +11,4 @@ Upload file dữ liệu cho từng tỉnh
 Hiển thị thông tin của từng tỉnh sau khi upload dữ liệu
 
 12/9/2019
-Chuyển state lên store redux
+Chuyển state lên store redux + Hiển thị thông tin dưới dạng bảng
