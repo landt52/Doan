@@ -1,0 +1,12 @@
+.infoDiv{
+    height: 70vh;
+    width: 25vw;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+    position: absolute;
+    left: 0px;
+    top: 60px;
+    background-color: white;
+    z-index: 1000;
+    overflow: scroll;
+    border-radius: 10px;
+}

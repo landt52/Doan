@@ -1,0 +1,17 @@
+.infoCard{
+    background-color: transparent;
+    cursor: pointer;
+    display: block;
+    width: 100%;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.infoCard:focus{
+    outline: none;
+}
+
+.infoCard:hover{
+    background-color: aliceblue;
+}

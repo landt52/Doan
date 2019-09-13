@@ -6,6 +6,7 @@ const initialState = {
     boundary: [],
     loading: false,
     err: null,
+    fetched: false
 }
 
 const reducer = (state = initialState, action) => {
@@ -30,10 +31,11 @@ const reducer = (state = initialState, action) => {
           lat: action.lat,
           lng: action.lng,
           loading: false,
-          err: null
+          err: null,
+          fetched: true
         });
       case actionTypes.LOAD_DISTRICTS_DATA_FAILED:
-        return Object.assign({}, state, { err: action.err, loading: false });
+        return Object.assign({}, state, { err: action.err, loading: false, fetched: false });
       default:
         return state;
     }
