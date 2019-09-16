@@ -56,3 +56,10 @@ export const loadDistrictsData = (values, provinceName) => dispatch => {
     .then(res => dispatch(loadDistrictDataSuccess(values, res)))
     .catch(err => dispatch(loadDistrictDataFailed(err)))
 };
+
+export const filterDistrictsData = (value) => {
+    return {
+        type: actionTypes.FILTER_DISTRICTS_DATA,
+        filterData: value
+    }
+}

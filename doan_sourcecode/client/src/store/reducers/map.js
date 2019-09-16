@@ -6,7 +6,8 @@ const initialState = {
   boundary: [],
   loading: false,
   err: null,
-  fetched: false
+  fetched: false,
+  filterData: 'Dân số thành thị (1000 n)'
 };
 
 const reducer = (state = initialState, action) => {
@@ -40,6 +41,8 @@ const reducer = (state = initialState, action) => {
         loading: false,
         fetched: false
       });
+    case actionTypes.FILTER_DISTRICTS_DATA:
+      return Object.assign({}, state, {filterData: action.filterData})
     default:
       return state;
   }

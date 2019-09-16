@@ -1,6 +1,7 @@
 export {
     loadMapOfVN,
-    loadDistrictsData
+    loadDistrictsData,
+    filterDistrictsData
 } from './map';
 
 export {

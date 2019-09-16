@@ -14,7 +14,7 @@ class ProvincePage extends Component {
   }
 
   click = (event) => {
-    console.log(event.target)
+    this.props.filterDistrictsData(event.target.textContent)
   }
 
   render() {
@@ -36,7 +36,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    loadDistrictsData: (values, provinceName) => dispatch(actions.loadDistrictsData(values, provinceName))
+    loadDistrictsData: (values, provinceName) => dispatch(actions.loadDistrictsData(values, provinceName)),
+    filterDistrictsData: (value) => dispatch(actions.filterDistrictsData(value))
   };
 }
 
