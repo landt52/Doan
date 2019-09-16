@@ -12,3 +12,6 @@ Hiển thị thông tin của từng tỉnh sau khi upload dữ liệu
 
 12/9/2019
 Chuyển state lên store redux + Hiển thị thông tin dưới dạng bảng
+
+16/9/2019
+Lọc thông tin theo từng thuộc tính + đổi màu vùng theo thuộc tính
