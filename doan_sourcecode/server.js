@@ -4,6 +4,8 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const morgan = require('morgan');
 const path = require("path");
+const AppError = require('./Error');
+const errorController = require('./controller/errorController');
 require('dotenv').config();
 
 
@@ -33,6 +35,12 @@ app.use('/api/vnBoundaries', boundaryRouter);
 app.use('/api/citiesName', citiesNameRouter);
 app.use('/api/districtsName', districtsNameRouter);
 app.use('/api/districts', uploadDistrictsInfoRouter);
+
+app.all('*', (req, res, next) => {
+  next(new AppError(`Không tìm thấy route ${req.originalUrl}`));
+});
+
+app.use(errorController);
 
 app.listen(port, err => {
     if(err) throw err;
