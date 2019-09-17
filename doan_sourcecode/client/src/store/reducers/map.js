@@ -8,7 +8,7 @@ const initialState = {
   err: null,
   fetched: false,
   vnfetched: false,
-  filterData: null
+  filterData: ''
 };
 
 const reducer = (state = initialState, action) => {

@@ -42,7 +42,6 @@ exports.uploadDistrictsModel = async (req, res, next) => {
           await csv()
             .fromFile(req.file.path)
             .then(async jsonObj => {
-              console.log(jsonObj);
               let obj = await jsonObj.reduce((acc, cur) => {
                 if(Array.isArray(Object.values(cur)[0])){
                   acc[Object.values(cur)[1]] = Object.values(cur)[0].pop();

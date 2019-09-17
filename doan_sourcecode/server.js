@@ -21,6 +21,7 @@ const boundaryRouter = require('./routes/boundaryRoutes');
 const citiesNameRouter = require('./routes/citiesNameRoutes');
 const districtsNameRouter = require('./routes/districtsNameRoutes');
 const uploadDistrictsInfoRouter = require('./routes/uploadDistrictsInfoRoutes');
+const uploadProvincesInfoRouter = require('./routes/uploadProvincesInfoRoutes');
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -35,6 +36,7 @@ app.use('/api/vnBoundaries', boundaryRouter);
 app.use('/api/citiesName', citiesNameRouter);
 app.use('/api/districtsName', districtsNameRouter);
 app.use('/api/districts', uploadDistrictsInfoRouter);
+app.use('/api/provinces', uploadProvincesInfoRouter);
 
 app.all('*', (req, res, next) => {
   next(new AppError(`Không tìm thấy route ${req.originalUrl}`));

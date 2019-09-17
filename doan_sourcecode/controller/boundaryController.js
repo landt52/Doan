@@ -1,17 +1,22 @@
 const database = require('../database');
 const District = require('../models/districtModel');
+const Province = require('../models/provincesModel');
 const catchAsync = require('../catchAsync');
 const AppError = require('../Error');
 
 exports.getVnBoundaries = catchAsync(async (req, res, next) => {
   const results = await database.getCityBoundaries();
+
+  const province = await Province.find();
+
   if (results.length === 0) {
     return next(new AppError('Không tìm thấy', 404));
   }
-  const boundaries = results.map(row => {
+  const boundaries = results.map((row, idx) => {
     let geojson = JSON.parse(row.st_asgeojson);
     geojson.id = row.id;
     geojson.properties = { name: row.adm1_name };
+    geojson.properties.data = { something: province[idx].data };
     return geojson;
   });
   res.status(200).send({ status: 'success', boundaries });

@@ -17,8 +17,12 @@ class App extends Component {
       <Auxiliary>
         <Switch>
           <Route path='/provinces' exact component={Provinces} />
-          <Route path='/provinces/:provinceName' component={ProvincePage} />
-          <Route path='/districts/:districtId' component={DistrictUploadPage} />
+          <Route path='/provinces/:provinceName' exact component={ProvincePage} />
+          <Route
+            path='/provinces/edit/:provinceId' exact
+            component={DistrictUploadPage}
+          />
+          <Route path='/districts/edit/:districtId' exact component={DistrictUploadPage} />
           <Route path='/districts' exact component={Districts} />
           <Route path='/' exact component={VNPage} />
           <Redirect to='/' />

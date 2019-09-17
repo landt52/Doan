@@ -20,7 +20,7 @@ class DistrictUploadPage extends Component {
     const data = new FormData();
     data.append('file', this.state.selectedFile);
     await axios(
-      `/api/districts/${
+      `/api/${this.props.match.path.split('/')[1]}/${
         this.props.match.params[Object.keys(this.props.match.params)[0]]
       }`,
       {

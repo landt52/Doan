@@ -57,7 +57,8 @@ class Map extends Component {
           Math.floor(this.state.max / 5),
           Math.floor((this.state.max * 2) / 5),
           Math.floor((this.state.max * 3) / 5),
-          Math.floor((this.state.max * 4) / 5)
+          Math.floor((this.state.max * 4) / 5),
+          Math.floor(this.state.max)
         ];
 
         this.legend.div.innerHTML = '';
@@ -145,15 +146,15 @@ class Map extends Component {
   };
 
   getColor = d => {
-    return d >= this.state.max
+    return d > this.state.max
       ? '#800026'
-      : d >= Math.floor((this.state.max * 4) / 5)
+      : d > Math.floor((this.state.max * 4) / 5)
       ? '#BD0026'
-      : d >= Math.floor((this.state.max * 3) / 5)
+      : d > Math.floor((this.state.max * 3) / 5)
       ? '#FC4E2A'
-      : d >= Math.floor((this.state.max * 2) / 5)
+      : d > Math.floor((this.state.max * 2) / 5)
       ? '#FD8D3C'
-      : d >= Math.floor(this.state.max / 5)
+      : d > Math.floor(this.state.max / 5)
       ? '#FED976'
       : '#FFEDA0';
   };
