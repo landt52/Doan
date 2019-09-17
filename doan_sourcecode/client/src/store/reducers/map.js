@@ -7,13 +7,20 @@ const initialState = {
   loading: false,
   err: null,
   fetched: false,
-  filterData: 'Dân số thành thị (1000 n)'
+  vnfetched: false,
+  filterData: null
 };
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
     case actionTypes.LOAD_MAP_OF_VN_START:
-      return Object.assign({}, state, { err: null, loading: true });
+      return Object.assign({}, state, {
+        err: null,
+        loading: true,
+        vnfetched: false,
+        fetched: false,
+        filterData: null
+      });
     case actionTypes.LOAD_MAP_OF_VN_SUCCESS:
       return Object.assign({}, state, {
         boundary: action.boundary,
@@ -21,11 +28,25 @@ const reducer = (state = initialState, action) => {
         lat: 16.830832,
         lng: 107.067261,
         err: null,
+        vnfetched: true,
+        filterData: 'Mật độ dân số (n/km2)'
       });
     case actionTypes.LOAD_MAP_OF_VN_FAILED:
-      return Object.assign({}, state, { err: action.err, loading: false });
+      return Object.assign({}, state, {
+        err: action.err,
+        loading: false,
+        vnfetched: false,
+        fetched: false,
+        filterData: null
+      });
     case actionTypes.LOAD_DISTRICTS_DATA_START:
-      return Object.assign({}, state, { err: null, loading: true, fetched: false });
+      return Object.assign({}, state, {
+        err: null,
+        loading: true,
+        vnfetched: false,
+        fetched: false,
+        filterData: null
+      });
     case actionTypes.LOAD_DISTRICTS_DATA_SUCCESS:
       return Object.assign({}, state, {
         boundary: action.boundary,
@@ -33,16 +54,19 @@ const reducer = (state = initialState, action) => {
         lng: action.lng,
         loading: false,
         err: null,
-        fetched: true
+        fetched: true,
+        filterData: 'Mật độ dân số (n/km2)'
       });
     case actionTypes.LOAD_DISTRICTS_DATA_FAILED:
       return Object.assign({}, state, {
         err: action.err,
         loading: false,
-        fetched: false
+        fetched: false,
+        vnfetched: false,
+        filterData: null
       });
     case actionTypes.FILTER_DISTRICTS_DATA:
-      return Object.assign({}, state, {filterData: action.filterData})
+      return Object.assign({}, state, { filterData: action.filterData });
     default:
       return state;
   }

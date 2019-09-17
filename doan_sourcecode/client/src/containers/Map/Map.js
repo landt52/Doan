@@ -5,6 +5,10 @@ import Spinner from '../../components/Spinner/Spinner';
 import classes from './Map.css';
 
 class Map extends Component {
+  state = {
+    max: 0
+  }
+
   componentDidMount() {
     this.map = L.map('map', {
       center: [this.props.lat, this.props.lng],
@@ -43,35 +47,50 @@ class Map extends Component {
 
     this.legend = L.control({ position: 'bottomright' });
     this.legend.onAdd = map => {
-      let div = L.DomUtil.create(
-          'div',
-          [classes.legend, classes.info].join(' ')
-        ),
-        grades = [0, 10, 20, 50, 100, 200, 500, 1000];
+      this.legend.div = L.DomUtil.create('div',[classes.legend, classes.info].join(' '));
+      return this.legend.div;
+    };
+
+    this.legend.update = () => {
+        let grades = [
+          0,
+          Math.floor(this.state.max / 5),
+          Math.floor((this.state.max * 2) / 5),
+          Math.floor((this.state.max * 3) / 5),
+          Math.floor((this.state.max * 4) / 5)
+        ];
+
+        this.legend.div.innerHTML = '';
 
       for (let i = 0; i < grades.length; i++) {
-        div.innerHTML +=
+        this.legend.div.innerHTML +=
           '<i style="background:' +
           this.getColor(grades[i] + 1) +
           '"></i> ' +
           grades[i] +
           (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
       }
-
-      return div;
-    };
-
+    }
+    
     this.legend.addTo(this.map);
   }
 
   componentDidUpdate(prevProps){
     if (
-      prevProps.filterData !== this.props.filterData ||
-      !prevProps.loading ||
+      (prevProps.filterData !== this.props.filterData ||
       prevProps.lat !== this.props.lat ||
-      prevProps.lng !== this.props.lng
+      prevProps.lng !== this.props.ln) && (this.props.vnfetched || this.props.fetched)
     ) {
-      this.info.update()
+      if(prevProps.filterData !== this.props.filterData || prevProps.boundary !== this.props.boundary){
+        this.setState({max: Math.max(
+          ...this.props.boundary.boundaries.map(
+            district => district.properties.data.something[this.props.filterData]
+          ),
+          0
+        )});
+      }
+      this.legend.update();
+      this.info.update();
       this.map.setView({ lat: this.props.lat, lng: this.props.lng });
 
       this.geojson = L.geoJSON(this.props.boundary.boundaries, {
@@ -126,19 +145,15 @@ class Map extends Component {
   };
 
   getColor = d => {
-    return d > 1000
+    return d >= this.state.max
       ? '#800026'
-      : d > 500
+      : d >= Math.floor((this.state.max * 4) / 5)
       ? '#BD0026'
-      : d > 200
-      ? '#E31A1C'
-      : d > 100
+      : d >= Math.floor((this.state.max * 3) / 5)
       ? '#FC4E2A'
-      : d > 50
+      : d >= Math.floor((this.state.max * 2) / 5)
       ? '#FD8D3C'
-      : d > 20
-      ? '#FEB24C'
-      : d > 10
+      : d >= Math.floor(this.state.max / 5)
       ? '#FED976'
       : '#FFEDA0';
   };
@@ -196,7 +211,9 @@ const mapStateToProps = state => {
     boundary: state.map.boundary,
     err: state.map.err,
     loading: state.map.loading,
-    filterData: state.map.filterData
+    filterData: state.map.filterData,
+    vnfetched: state.map.vnfetched,
+    fetched: state.map.fetched
   };
 };
 
