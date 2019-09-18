@@ -19,7 +19,7 @@ const reducer = (state = initialState, action) => {
         loading: true,
         vnfetched: false,
         fetched: false,
-        filterData: null
+        filterData: ''
       });
     case actionTypes.LOAD_MAP_OF_VN_SUCCESS:
       return Object.assign({}, state, {
@@ -37,7 +37,7 @@ const reducer = (state = initialState, action) => {
         loading: false,
         vnfetched: false,
         fetched: false,
-        filterData: null
+        filterData: ''
       });
     case actionTypes.LOAD_DISTRICTS_DATA_START:
       return Object.assign({}, state, {
@@ -45,13 +45,13 @@ const reducer = (state = initialState, action) => {
         loading: true,
         vnfetched: false,
         fetched: false,
-        filterData: null
+        filterData: ''
       });
     case actionTypes.LOAD_DISTRICTS_DATA_SUCCESS:
       return Object.assign({}, state, {
         boundary: action.boundary,
-        lat: action.lat,
-        lng: action.lng,
+        lat: +action.lat,
+        lng: +action.lng,
         loading: false,
         err: null,
         fetched: true,
@@ -63,7 +63,7 @@ const reducer = (state = initialState, action) => {
         loading: false,
         fetched: false,
         vnfetched: false,
-        filterData: null
+        filterData: ''
       });
     case actionTypes.FILTER_DISTRICTS_DATA:
       return Object.assign({}, state, { filterData: action.filterData });

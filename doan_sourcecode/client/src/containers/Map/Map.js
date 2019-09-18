@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import L from 'leaflet';
 import Spinner from '../../components/Spinner/Spinner';
 import classes from './Map.css';
+import { selectMapBoundary } from './MapReselect';
 
 class Map extends Component {
   state = {
@@ -26,48 +27,45 @@ class Map extends Component {
     this.map.zoomControl.setPosition('bottomright');
 
     this.info = L.control();
-    this.info.onAdd = map => {
-      this.info._div = L.DomUtil.create('div', classes.info);
+    this.info.onAdd = () => {
+      this.info.div = L.DomUtil.create('div', classes.info);
       this.info.update();
-      return this.info._div;
+      return this.info.div;
     };
 
-    this.info.update = data => {
-      this.info._div.innerHTML =
+    this.info.update = districtData => {
+      this.info.div.innerHTML =
         `<h4>${this.props.filterData}</h4>` +
-        (data
-          ? '<b>' +
-            data.name +
-            '</b><br />' +
-            data.data.something[this.props.filterData]
+        (districtData
+          ? `<b>${districtData.name}</b><br />${
+              districtData.data.something[this.props.filterData]
+            }`
           : 'Di chuột lên 1 tỉnh');
     };
 
     this.info.addTo(this.map);
 
     this.legend = L.control({ position: 'bottomright' });
-    this.legend.onAdd = map => {
+    this.legend.onAdd = () => {
       this.legend.div = L.DomUtil.create('div',[classes.legend, classes.info].join(' '));
       return this.legend.div;
     };
 
     this.legend.update = () => {
-        let grades = [
-          0,
-          Math.floor(this.state.max / 5),
-          Math.floor((this.state.max * 2) / 5),
-          Math.floor((this.state.max * 3) / 5),
-          Math.floor((this.state.max * 4) / 5),
-          Math.floor(this.state.max)
-        ];
+      let grades = [
+        0,
+        Math.floor(this.state.max / 5),
+        Math.floor((this.state.max * 2) / 5),
+        Math.floor((this.state.max * 3) / 5),
+        Math.floor((this.state.max * 4) / 5),
+        Math.floor(this.state.max)
+      ];
 
-        this.legend.div.innerHTML = '';
+      this.legend.div.innerHTML = '';
 
       for (let i = 0; i < grades.length; i++) {
         this.legend.div.innerHTML +=
-          '<i style="background:' +
-          this.getColor(grades[i] + 1) +
-          '"></i> ' +
+          `<i style="background: ${this.getColor(grades[i] + 1)}"></i>` +
           grades[i] +
           (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
       }
@@ -77,18 +75,19 @@ class Map extends Component {
   }
 
   componentDidUpdate(prevProps){
-    if (
-      (prevProps.filterData !== this.props.filterData ||
-      prevProps.lat !== this.props.lat ||
-      prevProps.lng !== this.props.ln) && (this.props.vnfetched || this.props.fetched)
-    ) {
+    if (this.props.vnfetched || this.props.fetched) {
       if(prevProps.filterData !== this.props.filterData || prevProps.boundary !== this.props.boundary){
-        this.setState({max: Math.max(
-          ...this.props.boundary.boundaries.map(
-            district => district.properties.data.something[this.props.filterData]
-          ),
-          0
-        )});
+        this.map.closePopup();
+        this.setState({
+          max: Math.max(
+            ...this.props.boundary.boundaries.map(district =>
+              district.properties.data.something
+                ? district.properties.data.something[this.props.filterData]
+                : 0
+            ),
+            0
+          )
+        });
       }
       this.legend.update();
       this.info.update();
@@ -124,23 +123,17 @@ class Map extends Component {
     this.info.update();
   };
 
-  zoomToFeature = e => {
-    this.map.fitBounds(e.target.getBounds(3));
-  };
-
   onEachDistrict = (feature, layer) => {
-    layer.bindPopup(feature.properties.name, { closeButton: true });
-    if (!feature.properties.data) return;
+    layer.bindPopup(feature.properties.name);
     if (feature.properties.data.something) {
       let popupContent = this.getInfoFrom(
         feature.properties.data.something,
         `${classes.table}`
       );
-      layer.bindPopup(popupContent, { closeButton: true });
+      layer.bindPopup(popupContent);
       layer.on({
         mouseover: this.highlightFeature,
-        mouseout: this.resetHighlight,
-        click: this.zoomToFeature
+        mouseout: this.resetHighlight
       });
     }
   };
@@ -155,15 +148,13 @@ class Map extends Component {
       : d > Math.floor((this.state.max * 2) / 5)
       ? '#FD8D3C'
       : d > Math.floor(this.state.max / 5)
-      ? '#FED976'
-      : '#FFEDA0';
+      ? '#FED976':'#FFEDA0';
   };
 
   style = feature => {
+    const data = feature.geometry.properties.data.something;
     return {
-      fillColor: this.getColor(
-        feature.geometry.properties.data.something[this.props.filterData]
-      ),
+      fillColor: this.getColor(data ? +data[this.props.filterData] : 0),
       weight: 2,
       opacity: 1,
       color: 'white',
@@ -173,9 +164,7 @@ class Map extends Component {
   };
 
   getInfoFrom = (object, className) => {
-    let cols = Object.entries(object);
-
-    let bodyRows = '';
+    let cols = Object.entries(object), bodyRows = '';
 
     className = className || '';
     cols.map(row => {
@@ -189,15 +178,12 @@ class Map extends Component {
   };
 
   render() {
-    let map;
-    map = this.props.loading ? (
+    let map = this.props.loading ? (
       <div>
         <Spinner />
       </div>
     ) : (
-      <div
-        id='map'
-        style={{ height: '92vh', width: '100vw', marginTop: '0px' }}
+      <div id='map' style={{ height: '92vh', width: '100vw', marginTop: '0px' }}
       ></div>
     );
 
@@ -207,9 +193,9 @@ class Map extends Component {
 
 const mapStateToProps = state => {
   return {
+    boundary: selectMapBoundary(state),
     lat: state.map.lat,
     lng: state.map.lng,
-    boundary: state.map.boundary,
     err: state.map.err,
     loading: state.map.loading,
     filterData: state.map.filterData,

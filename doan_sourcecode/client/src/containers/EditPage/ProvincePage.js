@@ -21,7 +21,7 @@ class ProvincePage extends Component {
     return (
       <Auxiliary>
         <InfoDiv data={this.props.data} onclicked={this.click} fetched={this.props.fetched}/>
-        <Map zoom={10} />
+        <Map zoom={9} />
       </Auxiliary>
     );
   }
