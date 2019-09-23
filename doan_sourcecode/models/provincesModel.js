@@ -12,6 +12,12 @@ const provinceSchema = new mongoose.Schema({
   },
   data: {
     type: Object
+  },
+  info: {
+    type: String
+  },
+  summary: {
+    type: Object
   }
 });
 

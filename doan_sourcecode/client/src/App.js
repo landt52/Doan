@@ -9,6 +9,7 @@ import Provinces from './containers/Provinces/Provinces';
 import ProvincePage from './containers/EditPage/ProvincePage';
 import VNPage from './containers/EditPage/VNPage';
 import DistrictUploadPage from './containers/DistrictUploadPage/DistrictUploadPage';
+import InfoPage from './containers/InfoPage/InfoPage';
 import Auxiliary from './hoc/Auxiliary/Auxiliary';
 
 class App extends Component {
@@ -18,10 +19,8 @@ class App extends Component {
         <Switch>
           <Route path='/provinces' exact component={Provinces} />
           <Route path='/provinces/:provinceName' exact component={ProvincePage} />
-          <Route
-            path='/provinces/edit/:provinceId' exact
-            component={DistrictUploadPage}
-          />
+          <Route path='/provinces/edit/:provinceId' exact component={DistrictUploadPage}/>
+          <Route path='/provinces/info/:provinceId' exact component={InfoPage}/>
           <Route path='/districts/edit/:districtId' exact component={DistrictUploadPage} />
           <Route path='/districts' exact component={Districts} />
           <Route path='/' exact component={VNPage} />

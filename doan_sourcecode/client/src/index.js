@@ -9,6 +9,7 @@ import App from './App';
 import mapReducer from './store/reducers/map';
 import provincesReducer from './store/reducers/provinces';
 import districtsReducer from './store/reducers/districts';
+import provinceDataReducer from './store/reducers/provinceData';
 import logger from 'redux-logger'
 
 import * as serviceWorker from './serviceWorker';
@@ -18,7 +19,8 @@ const composeEnhancers = process.env.NODE_ENV === 'development' ? window.__REDUX
 const rootReducer = combineReducers({
   map: mapReducer,
   provinces: provincesReducer,
-  districts: districtsReducer
+  districts: districtsReducer,
+  provinceData: provinceDataReducer
 });
 
 const store = createStore(

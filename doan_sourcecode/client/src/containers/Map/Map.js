@@ -179,7 +179,7 @@ class Map extends Component {
 
   render() {
     let map = this.props.loading ? (
-      <div>
+      <div style={{height: '92vh'}}>
         <Spinner />
       </div>
     ) : (

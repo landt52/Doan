@@ -11,3 +11,7 @@ export {
 export {
     loadDistrictsName
 } from './districts';
+
+export {
+    loadProvinceData
+} from './provinceData'

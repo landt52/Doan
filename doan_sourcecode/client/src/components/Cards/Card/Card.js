@@ -1,10 +1,9 @@
 import React from 'react';
 import classes from './Card.css';
 import {Link} from 'react-router-dom';
-import Auxiliary from '../../../hoc/Auxiliary/Auxiliary';
 
 const Cards = props => {
-  let card, editButton;
+  let card, editButton, infoPageButton;
 
   if(props.type === 'districts'){
     card = (
@@ -32,12 +31,15 @@ const Cards = props => {
         <button className='btn btn-primary'>Edit</button>
       </Link>
     );
+    infoPageButton = (
+      <Link to={{ pathname: `/${props.type}/info/${props.data._id}` }}>
+        <button className='btn btn-primary'>Info Page</button>
+      </Link>
+    );
   }
 
   return (
-    <Auxiliary>
-      <div className={classes.card}>{card}{editButton}</div>
-    </Auxiliary>
+      <div className={classes.card}>{card}{editButton}{infoPageButton}</div>
   );
 };
 

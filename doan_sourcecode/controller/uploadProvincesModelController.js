@@ -3,6 +3,7 @@ const multer = require('multer');
 const fs = require('fs');
 const Province = require('../models/provincesModel');
 const AppError = require('../Error');
+const catchAsync = require('../catchAsync');
 
 const storage = multer.diskStorage({
   destination: function(req, file, cb) {
@@ -42,7 +43,6 @@ exports.uploadProvincesModel = async (req, res, next) => {
         await csv()
           .fromFile(req.file.path)
           .then(async jsonObj => {
-            console.log(jsonObj)
             let obj = await jsonObj.reduce((acc, cur) => {
               acc[Object.values(cur)[0]] = Object.values(cur)[1];
               return acc;
@@ -67,3 +67,14 @@ exports.uploadProvincesModel = async (req, res, next) => {
     }
   });
 };
+
+exports.editProvinceModel = catchAsync(async (req, res, next) => {
+  await Province.findByIdAndUpdate(
+    req.params.provinceID,
+    { info: req.body.infoData },
+    {
+      new: true
+    }
+  );
+  res.status(200).send({ status: 'success' });
+})

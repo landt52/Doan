@@ -3,15 +3,23 @@ import classes from './DistrictUploadPage.css';
 import {toast} from 'react-toastify';
 import axios from 'axios';
 import { Progress } from 'reactstrap';
+import Wysiwyg from '../../components/Wysiwyg/Wysiwyg';
+import { EditorState, convertToRaw } from 'draft-js';
+import draftToHtml from 'draftjs-to-html';
 
 class DistrictUploadPage extends Component {
   state = {
     selectedFile: null,
-    loaded: 0
+    loaded: 0,
+    editorState: EditorState.createEmpty()
   };
 
   inputFile = event => {
-    if (this.maxSelectFile(event) && this.checkFileType(event) && this.checkFileSize(event)) {
+    if (
+      this.maxSelectFile(event) &&
+      this.checkFileType(event) &&
+      this.checkFileSize(event)
+    ) {
       this.setState({ selectedFile: event.target.files[0], loaded: 0 });
     }
   };
@@ -56,9 +64,8 @@ class DistrictUploadPage extends Component {
   };
 
   checkFileType = event => {
-   
     let files = event.target.files;
-    let err = []; 
+    let err = [];
     const types = ['text/csv', 'application/vnd.ms-excel', 'application/pdf'];
     for (let i = 0; i < files.length; i++) {
       if (types.every(type => files[i].type !== type)) {
@@ -88,35 +95,76 @@ class DistrictUploadPage extends Component {
     return true;
   };
 
+  onEditorStateChange = editorState => {
+    this.setState({
+      editorState
+    });
+  };
+
+  uploadInfo = async () => {
+    const infoData = convertToRaw(this.state.editorState.getCurrentContent())
+    await axios(
+      `/api/${this.props.match.path.split('/')[1]}/edit/${
+        this.props.match.params[Object.keys(this.props.match.params)[0]]
+      }`,
+      {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json'
+        },
+        data: {
+          infoData: JSON.stringify(infoData)
+        }
+      }
+    )
+      .then(res => {
+        toast.success('Upload thành công');
+      })
+      .catch(err => {
+        toast.error('Upload thất bại');
+      });
+  }
+
   render() {
     return (
-        <div className='container'>
-          <div className='row'>
-            <div className='offset-md-3 col-md-6'>
-              <div className={`form-group ${classes.files}`}>
-                <label>Upload your file</label>
-                <input
-                  type='file'
-                  className='form-control'
-                  multiple=''
-                  onChange={this.inputFile}
-                />
-              </div>
-              <div className='form-group'>
-                <Progress max='100' color='success' value={this.state.loaded}>
-                  {Math.round(this.state.loaded, 2)}%
-                </Progress>
-              </div>
-              <button
-                type='button'
-                className='btn btn-primary btn-block'
-                onClick={this.uploadFile}
-              >
-                Upload
-              </button>
+      <div className='container'>
+        <div className='row'>
+          <div className='offset-md-3 col-md-6'>
+            <div className={`form-group ${classes.files}`}>
+              <label>Upload your file</label>
+              <input
+                type='file'
+                className='form-control'
+                multiple=''
+                onChange={this.inputFile}
+              />
             </div>
+            <div className='form-group'>
+              <Progress max='100' color='success' value={this.state.loaded}>
+                {Math.round(this.state.loaded, 2)}%
+              </Progress>
+            </div>
+            <button
+              type='button'
+              className='btn btn-primary btn-block'
+              onClick={this.uploadFile}
+            >
+              Upload
+            </button>
           </div>
         </div>
+        <Wysiwyg
+          onEditorStateChange={this.onEditorStateChange}
+          editorState={this.state.editorState}
+        />
+        <button
+          type='button'
+          className='btn btn-primary btn-block'
+          onClick={this.uploadInfo}
+        >
+          Change Info
+        </button>
+      </div>
     );
   }
 }
