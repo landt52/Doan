@@ -18,6 +18,12 @@ const provinceSchema = new mongoose.Schema({
   },
   summary: {
     type: Object
+  },
+  image: {
+    type: [String]
+  },
+  imageID: {
+    type: [String]
   }
 });
 

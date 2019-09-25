@@ -1,0 +1,9 @@
+.infoPage{
+    padding: 5vh 40vh
+}
+
+.infoPage img{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}

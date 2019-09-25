@@ -4,6 +4,13 @@ const fs = require('fs');
 const Province = require('../models/provincesModel');
 const AppError = require('../Error');
 const catchAsync = require('../catchAsync');
+const cloudinary = require('cloudinary').v2;
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
 
 const storage = multer.diskStorage({
   destination: function(req, file, cb) {
@@ -60,6 +67,43 @@ exports.uploadProvincesModel = async (req, res, next) => {
           });
         fs.unlinkSync(req.file.path);
         res.status(200).send({ status: 'success' });
+      } catch (error) {
+        fs.unlinkSync(req.file.path);
+        return next(new AppError('Có lỗi xảy ra khi đọc file', 500));
+      }
+    }
+  });
+};
+
+const uploadPic = multer({
+  storage: storage,
+  fileFilter: function(req, file, callback) {
+    if (
+      ['png', 'jpeg', 'jpg'].indexOf(
+        file.originalname.split('.')[file.originalname.split('.').length - 1]
+      ) === -1
+    ) {
+      return next(new AppError('Sai đuôi file', 404));
+    }
+    callback(null, true);
+  }
+}).single('file');
+
+exports.uploadProvincePicture = async (req, res, next) => {
+  await uploadPic(req, res, async err => {
+    if (!req.file) {
+      return next(new AppError('Không có file', 500));
+    }
+    if (err instanceof multer.MulterError) {
+      return next(new AppError('Có lỗi xảy ra khi đọc file', 500));
+    } else if (err) {
+      return next(new AppError('Có lỗi xảy ra', 500));
+    }
+    if (req.file) {
+      try {
+        const result = await cloudinary.uploader.upload(req.file.path);
+        fs.unlinkSync(req.file.path);
+        res.status(200).send({ url: result.secure_url });
       } catch (error) {
         fs.unlinkSync(req.file.path);
         return next(new AppError('Có lỗi xảy ra khi đọc file', 500));

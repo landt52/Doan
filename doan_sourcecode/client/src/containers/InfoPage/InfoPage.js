@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
-import { stateToHTML } from 'draft-js-export-html';
-import { convertFromRaw } from 'draft-js';
 import Spinner from '../../components/Spinner/Spinner';
 import { connect } from 'react-redux';
 import * as actions from '../../store/actions/index';
-import { convertToRaw } from 'draft-js';
+import classes from './InfoPage.css';
 import draftToHtml from 'draftjs-to-html';
 
 class InfoPage extends Component {
@@ -31,7 +29,7 @@ class InfoPage extends Component {
     );
     if(this.props.fetched){
       info =
-        <div dangerouslySetInnerHTML={this.createMarkup()} />
+        <div className={classes.infoPage} dangerouslySetInnerHTML={this.createMarkup()} />
     }
     return info
   }

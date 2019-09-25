@@ -29,7 +29,7 @@ const reducer = (state = initialState, action) => {
         lng: 107.067261,
         err: null,
         vnfetched: true,
-        filterData: 'Mật độ dân số (n/km2)'
+        filterData: 'Tổng dân số (nghìn người)'
       });
     case actionTypes.LOAD_MAP_OF_VN_FAILED:
       return Object.assign({}, state, {
@@ -55,7 +55,7 @@ const reducer = (state = initialState, action) => {
         loading: false,
         err: null,
         fetched: true,
-        filterData: 'Mật độ dân số (n/km2)'
+        filterData: 'Tổng dân số'
       });
     case actionTypes.LOAD_DISTRICTS_DATA_FAILED:
       return Object.assign({}, state, {

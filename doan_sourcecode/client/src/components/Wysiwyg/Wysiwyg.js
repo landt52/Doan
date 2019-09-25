@@ -13,14 +13,22 @@ function Wysiwyg(props) {
           editorClassName={classes.Editor}
           editorState={props.editorState}
           onEditorStateChange={props.onEditorStateChange}
+          toolbar={{
+            image: {
+              uploadCallback: props.uploadCallback,
+              alt: { present: true, mandatory: false },
+              previewImage: true,
+              defaultSize: {height: 'auto', width: 'auto'}
+            }
+          }}
         />
         <textarea
+          style={{ width: '50%', height: '200px' }}
           disabled
           value={draftToHtml(
             convertToRaw(props.editorState.getCurrentContent())
           )}
         />
-        {console.log(draftToHtml(convertToRaw(props.editorState.getCurrentContent())))}
       </div>
     );
 }

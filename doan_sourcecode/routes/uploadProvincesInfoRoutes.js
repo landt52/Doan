@@ -14,6 +14,11 @@ router.post(
   uploadProvincesModelController.editProvinceModel
 );
 
+router.post(
+  '/picture/:provinceID',
+  uploadProvincesModelController.uploadProvincePicture
+);
+
 router.get('/data/:provinceID', provinceDataController.getProvinceInfo)
 
 module.exports = router;

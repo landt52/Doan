@@ -5,13 +5,13 @@ import axios from 'axios';
 import { Progress } from 'reactstrap';
 import Wysiwyg from '../../components/Wysiwyg/Wysiwyg';
 import { EditorState, convertToRaw } from 'draft-js';
-import draftToHtml from 'draftjs-to-html';
 
 class DistrictUploadPage extends Component {
   state = {
     selectedFile: null,
     loaded: 0,
-    editorState: EditorState.createEmpty()
+    editorState: EditorState.createEmpty(),
+    selectedPic: null
   };
 
   inputFile = event => {
@@ -125,6 +125,28 @@ class DistrictUploadPage extends Component {
       });
   }
 
+  uploadImage = async (file) => {
+    const data = new FormData();
+    data.append('file', file);
+    const fileData = await axios(
+      `/api/${this.props.match.path.split('/')[1]}/picture/${
+        this.props.match.params[Object.keys(this.props.match.params)[0]]
+      }`,
+      {
+        method: 'POST',
+        headers: {
+          'content-type': 'image'
+        },
+        data: data
+      }
+    )
+    return new Promise(
+      (resolve, reject) => {
+        resolve({ data: { link: fileData.data.url } });
+      }
+    );
+  }
+
   render() {
     return (
       <div className='container'>
@@ -156,6 +178,7 @@ class DistrictUploadPage extends Component {
         <Wysiwyg
           onEditorStateChange={this.onEditorStateChange}
           editorState={this.state.editorState}
+          uploadCallback={this.uploadImage}
         />
         <button
           type='button'
