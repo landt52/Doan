@@ -4,15 +4,43 @@ import {toast} from 'react-toastify';
 import axios from 'axios';
 import { Progress } from 'reactstrap';
 import Wysiwyg from '../../components/Wysiwyg/Wysiwyg';
-import { EditorState, convertToRaw } from 'draft-js';
+import { EditorState, convertToRaw, ContentState } from 'draft-js';
+import { connect } from 'react-redux';
+import * as actions from '../../store/actions/index';
+import draftToHtml from 'draftjs-to-html';
+import htmlToDraft from 'html-to-draftjs';
 
 class DistrictUploadPage extends Component {
   state = {
     selectedFile: null,
     loaded: 0,
-    editorState: EditorState.createEmpty(),
-    selectedPic: null
+    editorState: EditorState.createEmpty()
   };
+
+  componentDidMount() {
+    const type = this.props.match.path.split('/')[1];
+    const value = this.props.match.params[
+      Object.keys(this.props.match.params)[0]
+    ];
+    this.props.loadProvinceData(type, value);
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.provinceData !== this.props.provinceData) {
+      if (this.props.provinceData.data.provinceData.info) {
+        const html = draftToHtml(
+          JSON.parse(this.props.provinceData.data.provinceData.info)
+        );
+        const contentBlock = htmlToDraft(html);
+        const contentState = ContentState.createFromBlockArray(
+          contentBlock.contentBlocks
+        );
+        this.setState({
+          editorState: EditorState.createWithContent(contentState)
+        });
+      }
+    }
+  }
 
   inputFile = event => {
     if (
@@ -27,29 +55,28 @@ class DistrictUploadPage extends Component {
   uploadFile = async () => {
     const data = new FormData();
     data.append('file', this.state.selectedFile);
-    await axios(
-      `/api/${this.props.match.path.split('/')[1]}/${
-        this.props.match.params[Object.keys(this.props.match.params)[0]]
-      }`,
-      {
-        method: 'POST',
-        headers: {
-          'content-type': 'multipart/form-data'
-        },
-        data: data,
-        onUploadProgress: ProgressEvent => {
-          this.setState({
-            loaded: (ProgressEvent.loaded / ProgressEvent.total) * 100
-          });
+    try {
+      await axios(
+        `/api/${this.props.match.path.split('/')[1]}/${
+          this.props.match.params[Object.keys(this.props.match.params)[0]]
+        }`,
+        {
+          method: 'POST',
+          headers: {
+            'content-type': 'multipart/form-data'
+          },
+          data: data,
+          onUploadProgress: ProgressEvent => {
+            this.setState({
+              loaded: (ProgressEvent.loaded / ProgressEvent.total) * 100
+            });
+          }
         }
-      }
-    )
-      .then(res => {
-        toast.success('Upload thành công');
-      })
-      .catch(err => {
-        toast.error('Upload thất bại');
-      });
+      );
+      toast.success('Upload thành công');
+    } catch (err) {
+      toast.error('Upload thất bại');
+    }
   };
 
   maxSelectFile = event => {
@@ -102,30 +129,29 @@ class DistrictUploadPage extends Component {
   };
 
   uploadInfo = async () => {
-    const infoData = convertToRaw(this.state.editorState.getCurrentContent())
-    await axios(
-      `/api/${this.props.match.path.split('/')[1]}/edit/${
-        this.props.match.params[Object.keys(this.props.match.params)[0]]
-      }`,
-      {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json'
-        },
-        data: {
-          infoData: JSON.stringify(infoData)
+    const infoData = convertToRaw(this.state.editorState.getCurrentContent());
+    try {
+      await axios(
+        `/api/${this.props.match.path.split('/')[1]}/edit/${
+          this.props.match.params[Object.keys(this.props.match.params)[0]]
+        }`,
+        {
+          method: 'POST',
+          headers: {
+            'content-type': 'application/json'
+          },
+          data: {
+            infoData: JSON.stringify(infoData)
+          }
         }
-      }
-    )
-      .then(res => {
-        toast.success('Upload thành công');
-      })
-      .catch(err => {
-        toast.error('Upload thất bại');
-      });
-  }
+      );
+      toast.success('Upload thành công');
+    } catch (err) {
+      toast.error('Upload thất bại');
+    }
+  };
 
-  uploadImage = async (file) => {
+  uploadImage = async file => {
     const data = new FormData();
     data.append('file', file);
     const fileData = await axios(
@@ -139,13 +165,11 @@ class DistrictUploadPage extends Component {
         },
         data: data
       }
-    )
-    return new Promise(
-      (resolve, reject) => {
-        resolve({ data: { link: fileData.data.url } });
-      }
     );
-  }
+    return new Promise((resolve, reject) => {
+      resolve({ data: { link: fileData.data.url } });
+    });
+  };
 
   render() {
     return (
@@ -192,4 +216,19 @@ class DistrictUploadPage extends Component {
   }
 }
 
-export default DistrictUploadPage;
+const mapStateToProps = state => {
+  return {
+    provinceData: state.provinceData.provinceData,
+    loading: state.provinceData.loading,
+    fetched: state.provinceData.fetched
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    loadProvinceData: (type, value) =>
+      dispatch(actions.loadProvinceData(type, value))
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(DistrictUploadPage);

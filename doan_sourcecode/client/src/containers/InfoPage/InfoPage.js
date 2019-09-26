@@ -6,7 +6,7 @@ import classes from './InfoPage.css';
 import draftToHtml from 'draftjs-to-html';
 
 class InfoPage extends Component {
-  async componentDidMount() {
+  componentDidMount() {
       const type = this.props.match.path.split('/')[1];
       const value = this.props.match.params[Object.keys(this.props.match.params)[0]]
       this.props.loadProvinceData(type, value)
@@ -28,8 +28,8 @@ class InfoPage extends Component {
       </div>
     );
     if(this.props.fetched){
-      info =
-        <div className={classes.infoPage} dangerouslySetInnerHTML={this.createMarkup()} />
+      info = this.props.provinceData.data.provinceData.info ?
+        <div className={classes.infoPage} dangerouslySetInnerHTML={this.createMarkup()} /> : null
     }
     return info
   }

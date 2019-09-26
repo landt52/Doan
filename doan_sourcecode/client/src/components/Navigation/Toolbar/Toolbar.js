@@ -4,7 +4,7 @@ import NavigationItems from '../NavigationItems/NavigationItems';
 
 const toolbar = props => (
   <header className={classes.Toolbar}>
-  <h1>HELLO</h1>
+  <h1 style={{color: 'white'}}>VnGIS</h1>
     <nav>
       <NavigationItems />
     </nav>
