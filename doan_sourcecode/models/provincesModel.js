@@ -8,7 +8,8 @@ const provinceSchema = new mongoose.Schema({
   },
   provincename: {
     type: String,
-    required: [true, 'Quoc gia can co tinh - thanh pho']
+    required: [true, 'Quoc gia can co tinh - thanh pho'],
+    unique: true
   },
   data: {
     type: Object
@@ -24,6 +25,9 @@ const provinceSchema = new mongoose.Schema({
   },
   imageID: {
     type: [String]
+  },
+  tables: {
+    type: [Object]
   }
 });
 

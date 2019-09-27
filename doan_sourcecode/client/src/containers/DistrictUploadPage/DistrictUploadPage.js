@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import classes from './DistrictUploadPage.css';
 import {toast} from 'react-toastify';
 import axios from 'axios';
-import { Progress } from 'reactstrap';
+import { Progress, FormGroup, Label, Input } from 'reactstrap';
 import Wysiwyg from '../../components/Wysiwyg/Wysiwyg';
 import { EditorState, convertToRaw, ContentState } from 'draft-js';
 import { connect } from 'react-redux';
@@ -14,7 +14,9 @@ class DistrictUploadPage extends Component {
   state = {
     selectedFile: null,
     loaded: 0,
-    editorState: EditorState.createEmpty()
+    editorState: EditorState.createEmpty(),
+    chooseType: 'Map',
+    chooseValue: null
   };
 
   componentDidMount() {
@@ -55,6 +57,8 @@ class DistrictUploadPage extends Component {
   uploadFile = async () => {
     const data = new FormData();
     data.append('file', this.state.selectedFile);
+    data.append('chooseValue', this.state.chooseValue);
+    data.append('chooseType', this.state.chooseType)
     try {
       await axios(
         `/api/${this.props.match.path.split('/')[1]}/${
@@ -166,15 +170,44 @@ class DistrictUploadPage extends Component {
         data: data
       }
     );
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, _) => {
       resolve({ data: { link: fileData.data.url } });
     });
   };
 
+  changeType = value => {
+    this.setState({chooseType: value, chooseValue: null})
+  }
+
+  changeChooseValue = event => {
+    this.setState({chooseValue: event.target.value})
+  }
+
   render() {
+    let chooseUpload = (
+      <FormGroup>
+        <Label for='selectType'>Chọn loại dữ liệu</Label>
+        <Input
+          type='select'
+          id='selectType'
+          onChange={e => this.changeType(e.target.value)}
+        >
+          <option>Map</option>
+          <option>Info</option>
+        </Input>
+        {this.state.chooseType === 'Map' ? null : (
+          <div>
+            <Label for='textType'>Tên dữ liệu</Label>
+            <Input type='text' id='textType' required onChange={this.changeChooseValue}/>
+          </div>
+        )}
+      </FormGroup>
+    );
+
     return (
       <div className='container'>
         <div className='row'>
+          {chooseUpload}
           <div className='offset-md-3 col-md-6'>
             <div className={`form-group ${classes.files}`}>
               <label>Upload your file</label>
@@ -204,13 +237,17 @@ class DistrictUploadPage extends Component {
           editorState={this.state.editorState}
           uploadCallback={this.uploadImage}
         />
-        <button
-          type='button'
-          className='btn btn-primary btn-block'
-          onClick={this.uploadInfo}
-        >
-          Change Info
-        </button>
+        <div className='row'>
+          <div className='offset-md-3 col-md-6 pt-5'>
+            <button
+              type='button'
+              className='btn btn-primary btn-block'
+              onClick={this.uploadInfo}
+            >
+              Change Info
+            </button>
+          </div>
+        </div>
       </div>
     );
   }

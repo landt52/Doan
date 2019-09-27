@@ -8,6 +8,10 @@ const AppError = require('./Error');
 const errorController = require('./controller/errorController');
 require('dotenv').config();
 
+process.on('uncaughtException', err => {
+  console.log(err);
+  process.exit(1);
+});
 
 const DB = process.env.MONGODB.replace(
   '<PASSWORD>',
@@ -44,7 +48,14 @@ app.all('*', (req, res, next) => {
 
 app.use(errorController);
 
-app.listen(port, err => {
+const server = app.listen(port, err => {
     if(err) throw err;
     console.log('Server is running at port ' + port)
+});
+
+process.on('unhandledRejection', err => {
+  console.log(err)
+  server.close(() => {
+    process.exit(1);  
+  });
 });

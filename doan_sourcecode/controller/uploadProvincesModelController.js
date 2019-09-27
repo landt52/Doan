@@ -35,6 +35,21 @@ const upload = multer({
   }
 }).single('file');
 
+const convertType = value => {
+  var v = Number(value);
+  return !isNaN(v)
+    ? v
+    : value === 'undefined'
+    ? undefined
+    : value === 'null'
+    ? null
+    : value === 'true'
+    ? true
+    : value === 'false'
+    ? false
+    : value;
+};
+
 exports.uploadProvincesModel = async (req, res, next) => {
   await upload(req, res, async err => {
     if (!req.file) {
@@ -45,11 +60,12 @@ exports.uploadProvincesModel = async (req, res, next) => {
     } else if (err) {
       return next(new AppError('Có lỗi xảy ra', 500));
     }
-    if (req.file) {
+    if (req.file && req.body.chooseType === 'Map') {
       try {
         await csv()
           .fromFile(req.file.path)
           .then(async jsonObj => {
+            console.log(jsonObj)
             let obj = await jsonObj.reduce((acc, cur) => {
               acc[Object.values(cur)[0]] = Object.values(cur)[1];
               return acc;
@@ -71,6 +87,23 @@ exports.uploadProvincesModel = async (req, res, next) => {
         fs.unlinkSync(req.file.path);
         return next(new AppError('Có lỗi xảy ra khi đọc file', 500));
       }
+    }
+    else if (req.file && req.body.chooseType === 'Info' && convertType(req.body.chooseValue)) {
+      try {
+        await csv()
+          .fromFile(req.file.path)
+          .then(async jsonObj => {
+            console.log(jsonObj, req.body.chooseValue);
+          });
+        fs.unlinkSync(req.file.path);
+        res.status(200).send({ status: 'success' });
+      } catch (error) {
+        fs.unlinkSync(req.file.path);
+        return next(new AppError('Có lỗi xảy ra khi đọc file', 500));
+      }
+    }else{
+      fs.unlinkSync(req.file.path);
+      return next(new AppError('Hãy điền tên dữ liệu', 500));
     }
   });
 };
