@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import * as actions from '../../store/actions/index';
 import classes from './InfoPage.css';
 import draftToHtml from 'draftjs-to-html';
+import TableDiv from '../../components/TableDiv/TableDiv';
 
 class InfoPage extends Component {
   componentDidMount() {
@@ -28,8 +29,12 @@ class InfoPage extends Component {
       </div>
     );
     if(this.props.fetched){
-      info = this.props.provinceData.data.provinceData.info ?
-        <div className={classes.infoPage} dangerouslySetInnerHTML={this.createMarkup()} /> : null
+      info = this.props.provinceData.data.provinceData.info ? (
+        <div className={classes.infoPage}>
+          <div dangerouslySetInnerHTML={this.createMarkup()}></div>
+          <TableDiv data={this.props.provinceData.data.provinceData.tables} />
+        </div>
+      ) : null;
     }
     return info
   }

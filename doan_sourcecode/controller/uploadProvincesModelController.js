@@ -93,7 +93,25 @@ exports.uploadProvincesModel = async (req, res, next) => {
         await csv()
           .fromFile(req.file.path)
           .then(async jsonObj => {
-            console.log(jsonObj, req.body.chooseValue);
+            const obj = {};
+            obj[
+              Object.keys(jsonObj[0])[Object.keys(jsonObj[0]).length - 1]
+            ] = Object.keys(jsonObj[0]).slice(0, -1);
+
+            const restObj = await jsonObj.reduce((acc, cur) => {
+              acc[
+                Object.values(cur)[Object.values(cur).length - 1]
+              ] = Object.values(cur).slice(0, -1);
+              return acc;
+            }, {});
+
+            const newObj = {};
+            newObj[req.body.chooseValue] = Object.assign({}, obj, restObj);
+
+            await Province.findOneAndUpdate(
+              {_id: req.params.provinceID},
+              {"$push": {"tables": newObj}}
+            )
           });
         fs.unlinkSync(req.file.path);
         res.status(200).send({ status: 'success' });

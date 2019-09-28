@@ -17,9 +17,6 @@ const provinceSchema = new mongoose.Schema({
   info: {
     type: String
   },
-  summary: {
-    type: Object
-  },
   image: {
     type: [String]
   },
@@ -27,7 +24,7 @@ const provinceSchema = new mongoose.Schema({
     type: [String]
   },
   tables: {
-    type: [Object]
+    type: Array
   }
 });
 
