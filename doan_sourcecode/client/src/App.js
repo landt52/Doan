@@ -10,6 +10,7 @@ import ProvincePage from './containers/EditPage/ProvincePage';
 import VNPage from './containers/EditPage/VNPage';
 import DistrictUploadPage from './containers/DistrictUploadPage/DistrictUploadPage';
 import InfoPage from './containers/InfoPage/InfoPage';
+import AqiWeather from './containers/Aqi-Weather/AqiWeather';
 import Auxiliary from './hoc/Auxiliary/Auxiliary';
 
 class App extends Component {
@@ -23,6 +24,7 @@ class App extends Component {
           <Route path='/provinces/info/:provinceId' exact component={InfoPage}/>
           <Route path='/districts/edit/:districtId' exact component={DistrictUploadPage} />
           <Route path='/districts' exact component={Districts} />
+          <Route path='/aqi' exact component={AqiWeather} />
           <Route path='/' exact component={VNPage} />
           <Redirect to='/' />
         </Switch>

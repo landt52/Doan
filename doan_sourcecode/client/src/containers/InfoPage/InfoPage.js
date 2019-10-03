@@ -5,6 +5,7 @@ import * as actions from '../../store/actions/index';
 import classes from './InfoPage.css';
 import draftToHtml from 'draftjs-to-html';
 import TableDiv from '../../components/TableDiv/TableDiv';
+import Chart from '../Chart/Chart';
 
 class InfoPage extends Component {
   componentDidMount() {
@@ -33,6 +34,8 @@ class InfoPage extends Component {
         <div className={classes.infoPage}>
           <div dangerouslySetInnerHTML={this.createMarkup()}></div>
           <TableDiv data={this.props.provinceData.data.provinceData.tables} />
+          {this.props.provinceData.data.provinceData.tables.length !== 0 ? 
+            <Chart data={this.props.provinceData.data.provinceData.tables} /> : null}
         </div>
       ) : null;
     }

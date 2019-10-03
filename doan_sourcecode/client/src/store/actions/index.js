@@ -14,4 +14,8 @@ export {
 
 export {
     loadProvinceData
-} from './provinceData'
+} from './provinceData';
+
+export {
+    loadAqiData
+} from './AqiWeather';

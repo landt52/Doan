@@ -14,6 +14,9 @@ const navigationItems = props => (
     <NavigationItem link='/districts' exact>
       Districts
     </NavigationItem>
+    <NavigationItem link='/aqi' exact>
+      Aqi-Weather
+    </NavigationItem>
   </ul>
 );
 

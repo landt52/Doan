@@ -32,7 +32,6 @@ function TableDiv(props) {
           <div className={classes.tableDiv} key={Object.keys(d)[0]}>
             <h4>{Object.keys(d)[0]}</h4>
             <div dangerouslySetInnerHTML={{ __html: table }}></div>
-            {console.log(eachData[0])}
           </div>
         );
     })

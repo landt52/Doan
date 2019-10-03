@@ -10,9 +10,8 @@ import mapReducer from './store/reducers/map';
 import provincesReducer from './store/reducers/provinces';
 import districtsReducer from './store/reducers/districts';
 import provinceDataReducer from './store/reducers/provinceData';
-import logger from 'redux-logger'
-
-import * as serviceWorker from './serviceWorker';
+import aqiWeatherReducer from './store/reducers/AqiWeather';
+import logger from 'redux-logger';
 
 const composeEnhancers = process.env.NODE_ENV === 'development' ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ : null || compose;
 
@@ -20,7 +19,8 @@ const rootReducer = combineReducers({
   map: mapReducer,
   provinces: provincesReducer,
   districts: districtsReducer,
-  provinceData: provinceDataReducer
+  provinceData: provinceDataReducer,
+  aqiWeather: aqiWeatherReducer
 });
 
 const store = createStore(
@@ -37,8 +37,3 @@ const app = (
 );
 
 ReactDOM.render(app, document.getElementById('root'));
-
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();

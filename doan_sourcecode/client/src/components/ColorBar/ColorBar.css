@@ -1,0 +1,38 @@
+.colorBar{
+    display: flex;
+    width: 50vw;
+    transform: translate(50%, 0);
+    height: 3vh;
+    justify-content: center;
+    z-index: 1000;
+    align-items: center;
+    color: white;
+    font-size: .75rem;
+    position: absolute;
+    bottom: 1rem;
+}
+
+.bar{
+    display: flex;
+    padding: 0px 1rem;
+    text-align: center;
+    height: 100%;
+    align-items: center;
+}
+
+.bar:first-child{
+    border-bottom-left-radius: .5rem; 
+    border-top-left-radius: .5rem; 
+}
+
+.bar:last-child{
+    border-bottom-right-radius: .5rem; 
+    border-top-right-radius: .5rem; 
+}
+
+.bar1{background-color: #A8E05F}
+.bar2{background-color: #FDD74B}
+.bar3{background-color: #FE9B57}
+.bar4{background-color: #FE6A69}
+.bar5{background-color: #A97ABC}
+.bar6{background-color: #A87383}
