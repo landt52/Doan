@@ -1,7 +1,7 @@
-const database = require('../database');
-const catchAsync = require('../catchAsync');
-const AppError = require('../Error');
-const Province = require('../models/provincesModel');
+const database = require('./../database');
+const catchAsync = require('./../catchAsync');
+const AppError = require('./../Error');
+const Province = require('./../models/provincesModel');
 
 exports.getCitiesName = catchAsync(async (req, res, next) => {
   const results = database.getAllCitiesName();

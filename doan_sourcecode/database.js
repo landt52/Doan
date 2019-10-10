@@ -25,7 +25,7 @@ module.exports = {
     return result.rows;
   },
 
-  getDistrictBoundaries: async (name) => {
+  getDistrictBoundaries: async name => {
     const boundaryQuery = `
 	    	SELECT ST_AsGeoJSON(geom), id, adm2_name_
         FROM public."vnDistricts"

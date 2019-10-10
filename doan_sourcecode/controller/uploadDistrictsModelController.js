@@ -1,8 +1,8 @@
 const csv = require('csvtojson');
 const multer = require('multer');
 const fs = require('fs');
-const District = require('../models/districtModel');
-const AppError = require('../Error');
+const District = require('./../models/districtModel');
+const AppError = require('./../Error');
 
 const storage = multer.diskStorage({
   destination: function(req, file, cb) {

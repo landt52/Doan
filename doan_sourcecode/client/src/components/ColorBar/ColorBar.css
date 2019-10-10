@@ -7,14 +7,14 @@
     z-index: 1000;
     align-items: center;
     color: white;
-    font-size: .75rem;
+    font-size: 1.25rem;
     position: absolute;
     bottom: 1rem;
 }
 
 .bar{
     display: flex;
-    padding: 0px 1rem;
+    padding: 0px 1.5rem;
     text-align: center;
     height: 100%;
     align-items: center;
@@ -36,3 +36,15 @@
 .bar4{background-color: #FE6A69}
 .bar5{background-color: #A97ABC}
 .bar6{background-color: #A87383}
+
+.tempBar1{background-image: linear-gradient(to right, #101233 , #531F56)}
+.tempBar2{background-image: linear-gradient(to right, #531F56 , #99418F)}
+.tempBar3{background-image: linear-gradient(to right, #99418F , #8A52A0)}
+.tempBar4{background-image: linear-gradient(to right, #8A52A0 , #426BB2)}
+.tempBar5{background-image: linear-gradient(to right, #426BB2 , #61C9E1)}
+.tempBar6{background-image: linear-gradient(to right, #61C9E1 , #DADC34)}
+.tempBar7{background-image: linear-gradient(to right, #DADC34 , #F6A123)}
+.tempBar8{background-image: linear-gradient(to right, #F6A123 , #EA681F)}
+.tempBar9{background-image: linear-gradient(to right, #EA681F , #D81313)}
+.tempBar10{background-image: linear-gradient(to right, #D81313 , #9E1010 )}
+.tempBar11{background-image: linear-gradient(to right, #9E1010  , #9E1010 )}

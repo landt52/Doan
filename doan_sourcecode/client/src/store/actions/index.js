@@ -17,5 +17,9 @@ export {
 } from './provinceData';
 
 export {
-    loadAqiData
+    loadAqiData,
+    loadWeatherData,
+    changeType,
+    openModal,
+    closeModal
 } from './AqiWeather';

@@ -3,26 +3,77 @@ import Map from './AqiWeatherMap';
 import {connect} from 'react-redux';
 import * as actions from '../../store/actions/index';
 import ColorBar from '../../components/ColorBar/ColorBar';
+import {Button} from 'reactstrap';
+import Modal from '../../components/Modal/Modal';
+import WeatherCard from '../../components/WeatherCard/WeatherCard';
+import Auxiliary from '../../hoc/Auxiliary/Auxiliary';
 
 class AqiWeather extends Component {
     componentDidMount(){
         this.props.loadAqiData();
+        this.props.loadWeatherData();
+    }
+
+    changeType = (e) => {
+        this.props.changeType(e.target.value)
     }
 
     render() {
         return (
-          <div>
+          <Auxiliary>
+            <Modal show={this.props.openModal} modalClosed={this.props.closeModal} >
+              <WeatherCard data={this.props.properties} />
+            </Modal>
             <Map zoom={6} lat={16.830832} lng={107.067261} />
-            <ColorBar />
-          </div>
+            <ColorBar type={this.props.type}/>
+            <Button
+              color='primary'
+              style={{
+                zIndex: '1000',
+                position: 'absolute',
+                bottom: '1rem',
+                left: '1rem',
+                fontSize: '1.6rem'
+              }}
+              value={'weather'}
+              onClick={this.changeType}
+            >
+              Weather
+            </Button>
+            <Button
+              color='primary'
+              style={{
+                zIndex: '1000',
+                position: 'absolute',
+                bottom: '5rem',
+                left: '1rem',
+                fontSize: '1.6rem'
+              }}
+              value={'aqi'}
+              onClick={this.changeType}
+            >
+              Aqi
+            </Button>
+          </Auxiliary>
         );
     }
 }
 
+const mapStateToProps = state => {
+  return {
+    type: state.aqiWeather.type,
+    openModal: state.aqiWeather.openModal,
+    properties: state.aqiWeather.properties
+  }
+}
+
 const mapDispatchToProps = dispatch => {
     return {
-        loadAqiData: () => dispatch(actions.loadAqiData())
+        loadAqiData: () => dispatch(actions.loadAqiData()),
+        loadWeatherData: () => dispatch(actions.loadWeatherData()),
+        changeType: (type) => dispatch(actions.changeType(type)),
+        closeModal: () => dispatch(actions.closeModal())
     }
 }
 
-export default connect(null, mapDispatchToProps)(AqiWeather);
+export default connect(mapStateToProps, mapDispatchToProps)(AqiWeather);

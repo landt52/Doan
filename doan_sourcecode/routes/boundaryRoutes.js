@@ -1,5 +1,5 @@
 const express = require('express');
-const boundaryController = require('../controller/boundaryController');
+const boundaryController = require('./../controller/boundaryController');
 
 const router = express.Router();
 

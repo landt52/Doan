@@ -1,6 +1,6 @@
 const express = require('express');
-const uploadProvincesModelController = require('../controller/uploadProvincesModelController');
-const provinceDataController = require('../controller/provinceDataController');
+const uploadProvincesModelController = require('./../controller/uploadProvincesModelController');
+const provinceDataController = require('./../controller/provinceDataController');
 
 const router = express.Router();
 

@@ -1,8 +1,8 @@
-const database = require('../database');
-const District = require('../models/districtModel');
-const Province = require('../models/provincesModel');
-const catchAsync = require('../catchAsync');
-const AppError = require('../Error');
+const database = require('./../database');
+const District = require('./../models/districtModel');
+const Province = require('./../models/provincesModel');
+const catchAsync = require('./../catchAsync');
+const AppError = require('./../Error');
 
 exports.getVnBoundaries = catchAsync(async (req, res, next) => {
   const results = database.getCityBoundaries();

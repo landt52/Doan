@@ -1,9 +1,9 @@
 const csv = require('csvtojson');
 const multer = require('multer');
 const fs = require('fs');
-const Province = require('../models/provincesModel');
-const AppError = require('../Error');
-const catchAsync = require('../catchAsync');
+const Province = require('./../models/provincesModel');
+const AppError = require('./../Error');
+const catchAsync = require('./../catchAsync');
 const cloudinary = require('cloudinary').v2;
 
 cloudinary.config({

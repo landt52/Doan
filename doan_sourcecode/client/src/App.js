@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import './App.css';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Route, Switch, withRouter, Redirect } from 'react-router-dom';

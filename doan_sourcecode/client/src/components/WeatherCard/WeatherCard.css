@@ -1,0 +1,40 @@
+.weatherCard{
+    display: flex;
+    height: 55vh;
+    justify-content: space-between;
+    flex-direction: column;
+    text-align: center;
+    font-size: 1.6rem;
+}
+
+.weatherHeader{
+    border-radius: .3rem;
+    box-shadow: 0 4px 8px rgba(0,30,84,.12),0 1px 3px rgba(0,30,84,.08);
+}
+
+.weatherHeader p{
+    margin: 0;
+}
+
+.weatherBottom{
+    display: flex;
+    justify-content: space-between;
+    overflow-x: scroll;
+    border-radius: .3rem;
+    box-shadow: 0 4px 8px rgba(0,30,84,.12),0 1px 3px rgba(0,30,84,.08);
+}
+
+.weatherBottom__card{
+    min-width: 10rem;    border-radius: .3rem;
+    box-shadow: 0 4px 8px rgba(0,30,84,.12),0 1px 3px rgba(0,30,84,.08);
+    margin: .5rem;
+    text-align: center;
+    font-size: 1.3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.weatherBottom__card p{
+    margin: 0;
+}

@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import L from 'leaflet';
 import Spinner from '../../components/Spinner/Spinner';
 import {connect} from 'react-redux';
+import * as actions from '../../store/actions/index';
+import GetIcon from './GetIcon';
 
 class AqiWeatherMap extends Component {
     componentDidMount(){
@@ -20,42 +22,90 @@ class AqiWeatherMap extends Component {
             )
           ]
         });
-        this.layers = {};
+
+        this.layerGroup = L.layerGroup().addTo(this.map);
         this.map.zoomControl.setPosition('bottomright');
         this.addLocationGeoJson('aqi', this.props.aqi);
+        this.props.changeType('aqi');
     }
 
     componentDidUpdate() {
-      this.addLocationGeoJson('aqi', this.props.aqi);
+        this.layerGroup.clearLayers();
+        this.addLocationGeoJson(this.props.type, this.props[this.props.type]);
     }
 
-    checkColor = (aqi) => {
-      return aqi >= 301
+    checkAqiColor = (aqi) => {
+      return +aqi >= 301
         ? 'A87383'
-        : aqi >= 201
+        : +aqi >= 201
         ? 'A97ABC'
-        : aqi >= 151
+        : +aqi >= 151
         ? 'FE6A69'
-        : aqi >= 101
+        : +aqi >= 101
         ? 'FE9B57'
-        : aqi >= 51
+        : +aqi >= 51
         ? 'FDD74B'
         : 'A8E05F';
     }
     
+    checkTempColor = (temp) => {
+      return +temp >= 50
+        ? '9E1010'
+        : +temp >= 40
+        ? 'D81313'
+        : +temp >= 30
+        ? 'EA681F'
+        : +temp >= 20
+        ? 'F6A123'
+        : +temp >= 10
+        ? 'DADC34'
+        : +temp >= 0
+        ? '61C9E1'
+        : +temp >= -10
+        ? '426BB2'
+        : +temp >= -20
+        ? '8A52A0'
+        : +temp >= -30
+        ? '99418F'
+        : +temp >= -40
+        ? '531F56'
+        : '101233'
+    }
+
+    locationType = (layerTitle, feature) => {
+      switch (layerTitle) {
+        case `aqi`:
+          return `https://ui-avatars.com/api/?rounded=true&size=36&font-size=0.4&length=3&color=fff&background=${this.checkAqiColor(
+              feature.properties.aqi
+            )}&name=${feature.properties.aqi}`
+        case `weather`:
+          return encodeURI('data:image/svg+xml,' + GetIcon(feature.properties.icon, this.checkTempColor(feature.properties.temp))).replace('#', '%23')
+        default:
+          return `https://ui-avatars.com/api/?rounded=true&size=36&font-size=0.4&length=3&color=fff&background=808080&name=N/A`;
+      }
+    }
+    
     addLocationGeoJson = (layerTitle, geojson) => {
-      this.layers[layerTitle] = L.geoJSON(geojson, {
+      L.geoJSON(geojson, {
         pointToLayer: (feature, latlng) => {
           return L.marker(latlng, {
             icon: L.icon({
-              iconUrl:
-                `https://ui-avatars.com/api/?rounded=true&size=36&font-size=0.4&length=3&color=fff&background=${this.checkColor(feature.properties.aqi)}&name=${feature.properties.aqi}`,
-              iconSize: [30, 30]
+              iconUrl: this.locationType(layerTitle, feature),
+              iconSize: layerTitle === 'aqi' ? [30, 30] : [40, 40]
             }),
-            title: feature.properties.name
+            title: feature.properties.name 
           });
+        },
+        onEachFeature: layerTitle === 'weather' ? this.onEachLocation : null 
+      }).addTo(this.layerGroup);
+    }
+
+    onEachLocation = (feature, layer) => {
+      layer.on({
+        click: (e) => {
+          this.props.openModal(feature.properties)
         }
-      }).addTo(this.map);
+      })
     }
 
     render() {
@@ -70,25 +120,6 @@ class AqiWeatherMap extends Component {
           ></div>
         );
 
-        // <img
-        //   alt=''
-        //   src='https://ui-avatars.com/api/?rounded=true&size=36&font-size=0.4&length=3&color=fff&background=fe9b57&name=120'
-        //   style={{
-        //     position: 'absolute',
-        //     left: '0px',
-        //     top: '0px',
-        //     userSelect: 'none',
-        //     width: '40px',
-        //     height: '40px',
-        //     border: '0px',
-        //     padding: '0px',
-        //     margin: '0px',
-        //     maxWidth: 'none',
-        //     opacity: '1',
-        //     zIndex: '1000'
-        //   }}
-        // />;
-
         return map;
     }
 }
@@ -96,9 +127,17 @@ class AqiWeatherMap extends Component {
 const mapStateToProps = state => {
   return {
     aqi: state.aqiWeather.aqi,
-    loading: state.aqiWeather.loading
+    loading: state.aqiWeather.loading,
+    type: state.aqiWeather.type,
+    weather: state.aqiWeather.weather
   }
 }
 
+const mapDispatchToProps = dispatch => {
+  return {
+    changeType: (type) => dispatch(actions.changeType(type)),
+    openModal: (data) => dispatch(actions.openModal(data))
+  }
+}
 
-export default connect(mapStateToProps)(AqiWeatherMap);
+export default connect(mapStateToProps, mapDispatchToProps)(AqiWeatherMap);

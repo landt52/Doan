@@ -1,5 +1,5 @@
 const express = require('express');
-const uploadDistrictsModelController = require('../controller/uploadDistrictsModelController');
+const uploadDistrictsModelController = require('./../controller/uploadDistrictsModelController');
 
 const router = express.Router();
 
