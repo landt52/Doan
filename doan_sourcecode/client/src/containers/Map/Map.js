@@ -70,13 +70,15 @@ class Map extends Component {
           (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
       }
     }
-    
+
+    this.layerGroup = L.layerGroup().addTo(this.map);
     this.legend.addTo(this.map);
   }
 
   componentDidUpdate(prevProps){
     if (this.props.vnfetched || this.props.fetched) {
       if(prevProps.filterData !== this.props.filterData || prevProps.boundary !== this.props.boundary){
+        this.layerGroup.clearLayers();
         this.map.closePopup();
         this.setState({
           max: Math.max(
@@ -96,7 +98,7 @@ class Map extends Component {
       this.geojson = L.geoJSON(this.props.boundary.boundaries, {
         style: this.style,
         onEachFeature: this.onEachDistrict
-      }).addTo(this.map);
+      }).addTo(this.layerGroup);
     }
   }
 

@@ -12,12 +12,14 @@ class Provinces extends Component {
     render() {
         let cards = this.props.err ? <p>Có lỗi xảy ra</p> : <Spinner />;
         
-        if(this.props.provinces !== null) cards = (
-                                            <Cards
-                                              data={this.props.provinces}
-                                              type={"provinces"}
-                                            />
-                                          );
+        if(this.props.provinces !== null) 
+            cards = (
+                <Cards
+                    data={this.props.provinces}
+                    type={"provinces"}
+                    role={this.props.role}
+                />
+            );
         return (
             <div>
                 <h1>Provinces</h1>
@@ -31,7 +33,8 @@ const mapStateToProps = state => {
     return {
         provinces: state.provinces.provinces,
         err: state.provinces.err,
-        loading: state.provinces.loading
+        loading: state.provinces.loading,
+        role: state.auth.role
     }
 }
 

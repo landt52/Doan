@@ -23,3 +23,15 @@ export {
     openModal,
     closeModal
 } from './AqiWeather';
+
+export {
+    auth,
+    logOut,
+    authCheckState,
+    setAuthRedirect,
+    signup
+} from './auth';
+
+export {
+    getAllLocations
+} from './location';

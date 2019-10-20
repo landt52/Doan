@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require('mongoose');
 const cors = require("cors");
 const bodyParser = require("body-parser");
+const cookieParser = require('cookie-parser');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
@@ -36,6 +37,8 @@ const uploadProvincesInfoRouter = require('./routes/uploadProvincesInfoRoutes');
 const aqiRouter = require('./routes/aqiRoutes');
 const weatherRouter = require('./routes/weatherRoutes');
 const userRouter = require('./routes/userRoutes');
+const reviewRouter = require('./routes/reviewRoutes');
+const locationRouter = require('./routes/locationRoutes');
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -58,6 +61,8 @@ if(process.env.NODE_ENV.trim() === 'development') app.use(morgan('dev'));
 
 app.use(bodyParser.json({ limit: '10kb' }));
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use(express.static('icon'));
 
 const aqiJob = new cron.CronJob({
   cronTime: '0 * * * *',
@@ -98,6 +103,8 @@ app.use('/api/provinces', uploadProvincesInfoRouter);
 app.use('/api/aqi', aqiRouter);
 app.use('/api/weather', weatherRouter);
 app.use('/api/user', userRouter);
+app.use('/api/review', reviewRouter);
+app.use('/api/location', locationRouter);
 
 app.all('*', (req, res, next) => {
   next(new AppError(`Không tìm thấy route ${req.originalUrl}`));

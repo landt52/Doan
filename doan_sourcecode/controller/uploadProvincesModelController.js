@@ -65,7 +65,6 @@ exports.uploadProvincesModel = async (req, res, next) => {
         await csv()
           .fromFile(req.file.path)
           .then(async jsonObj => {
-            console.log(jsonObj)
             let obj = await jsonObj.reduce((acc, cur) => {
               acc[Object.values(cur)[0]] = Object.values(cur)[1];
               return acc;
@@ -81,10 +80,10 @@ exports.uploadProvincesModel = async (req, res, next) => {
               }
             );
           });
-        fs.unlinkSync(req.file.path);
+        await fs.unlink(req.file.path);
         res.status(200).send({ status: 'success' });
       } catch (error) {
-        fs.unlinkSync(req.file.path);
+        await fs.unlink(req.file.path);
         return next(new AppError('Có lỗi xảy ra khi đọc file', 500));
       }
     }
@@ -113,14 +112,14 @@ exports.uploadProvincesModel = async (req, res, next) => {
               {"$push": {"tables": newObj}}
             )
           });
-        fs.unlinkSync(req.file.path);
+        await fs.unlink(req.file.path);
         res.status(200).send({ status: 'success' });
       } catch (error) {
-        fs.unlinkSync(req.file.path);
+        await fs.unlink(req.file.path);
         return next(new AppError('Có lỗi xảy ra khi đọc file', 500));
       }
     }else{
-      fs.unlinkSync(req.file.path);
+      await fs.unlink(req.file.path);
       return next(new AppError('Hãy điền tên dữ liệu', 500));
     }
   });
@@ -153,10 +152,10 @@ exports.uploadProvincePicture = async (req, res, next) => {
     if (req.file) {
       try {
         const result = await cloudinary.uploader.upload(req.file.path);
-        fs.unlinkSync(req.file.path);
+        await fs.unlink(req.file.path);
         res.status(200).send({ url: result.secure_url });
       } catch (error) {
-        fs.unlinkSync(req.file.path);
+        await fs.unlink(req.file.path);
         return next(new AppError('Có lỗi xảy ra khi đọc file', 500));
       }
     }

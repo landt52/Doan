@@ -112,7 +112,7 @@ class DistrictUploadPage extends Component {
 
   checkFileSize = event => {
     let files = event.target.files;
-    let size = 10000000;
+    let size = 100000;
     let err = [];
     for (let i = 0; i < files.length; i++) {
       if (files[i].size > size) {

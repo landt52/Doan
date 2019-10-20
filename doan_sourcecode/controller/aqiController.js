@@ -12,12 +12,11 @@ exports.updateAqi = catchAsync(async (req, res, next) => {
 
     const newData = aqiData.data.map(({id, type, coordinates, ...data}) => {
       let [lat, lng] = Object.values(coordinates);
-      [lat, lng] = [lng, lat];
       return {
         ...data,
         location: {
           type: "Point",
-          coordinates: [lat, lng]
+          coordinates: [lng, lat]
         }
       }
     })

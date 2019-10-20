@@ -31,7 +31,7 @@ const handleCastError = err => {
 const handleDuplicateFields = err => {
   const value = err.errmsg.match(/(["'])(\\?.)*?\1/)[0];
   const message = `Trùng trường dữ liệu ${value}`;
-  return new AppError(message, 400);
+  return new AppError('ABC', 400);
 }
 
 const handleValidationError = err => {

@@ -5,53 +5,59 @@ const bcrypt = require('bcryptjs');
 const Role = require('./Role');
 
 const userSchema = new mongoose.Schema({
-    userName: {
-        type: String,
-        required: [true, 'User cần có username']
-    },
-    email: {
-        type: String,
-        required: [true, 'User cần có email'],
-        unique: true,
-        lowercase: true,
-        validate: [validator.isEmail, 'Làm ơn điền đúng thông tin email']
-    },
-    photo: String,
-    password: {
-        type: String,
-        required: [true, "Làm ơn điền password"],
-        minlength: 8,
-        select: false
-    },
-    passwordConfirm: {
-        type: String,
-        required: [true, 'Làm ơn điền lại password'],
-        validate: {
-            validator: function(el){
-                return el === this.password;
-            },
-            message: 'Password không giống nhau'
-        }
-    },
-    passwordChangedAt: {
-        type: Date
-    },
-    role: {
-        type: String,
-        enum: Object.keys(Role),
-        default: Role.User
-    },
-    passwordResetToken: {
-        type: String
-    },
-    passwordResetExpired: {
-        type: Date
-    },
-    active: {
-        type: Boolean,
-        default: true,
-        select: false
+  userName: {
+    type: String,
+    required: [true, 'User cần có username'],
+    unique: true
+  },
+  email: {
+    type: String,
+    required: [true, 'User cần có email'],
+    unique: true,
+    lowercase: true,
+    validate: [validator.isEmail, 'Làm ơn điền đúng thông tin email']
+  },
+  photo: {
+    type: String,
+    default:
+      'https://res.cloudinary.com/private-name/image/upload/v1570973256/default-user-icon-4.jpg'
+  },
+  photoId: String,
+  password: {
+    type: String,
+    required: [true, 'Làm ơn điền password'],
+    minlength: 8,
+    select: false
+  },
+  passwordConfirm: {
+    type: String,
+    required: [true, 'Làm ơn điền lại password'],
+    validate: {
+      validator: function(el) {
+        return el === this.password;
+      },
+      message: 'Password không giống nhau'
     }
+  },
+  passwordChangedAt: {
+    type: Date
+  },
+  role: {
+    type: String,
+    enum: Object.keys(Role),
+    default: Role.User
+  },
+  passwordResetToken: {
+    type: String
+  },
+  passwordResetExpired: {
+    type: Date
+  },
+  active: {
+    type: Boolean,
+    default: true,
+    select: false
+  }
 });
 
 userSchema.pre('save', async function(next){

@@ -63,10 +63,10 @@ exports.uploadDistrictsModel = async (req, res, next) => {
                   new: true
               })
             });
-            fs.unlinkSync(req.file.path);
+            await fs.unlink(req.file.path);
             res.status(200).send({ status: 'success' });
       } catch (error) {
-          fs.unlinkSync(req.file.path);
+          await fs.unlink(req.file.path);
           return next(new AppError('Có lỗi xảy ra khi đọc file', 500));
       }    
     }

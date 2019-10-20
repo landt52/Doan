@@ -17,6 +17,8 @@ exports.authorize = catchAsync(async (req, res, next) => {
 
   if(req.headers.authorization && req.headers.authorization.startsWith('Bearer')){
     token = req.headers.authorization.split(' ')[1];
+  }else if(req.cookies.jwt){
+    token = req.cookies.jwt
   }
 
   if(!token){
@@ -60,7 +62,7 @@ exports.signup = catchAsync(async (req, res, next) => {
 
   res.cookie('jwt', token, cookieOptions);
 
-  user.password = undefined;
+  newUser.password = undefined;
 
   res.status(201).json({ 
     status: 'success',
@@ -78,7 +80,7 @@ exports.login = catchAsync(async (req, res, next) => {
     return next(new AppError('Hãy điền đủ email và password', 400));
   }
 
-  const user = await User.findOne({email}).select('+password');
+  const user = await User.findOne({email}, {role: 1, userName: 1, photo: 1}).select('+password');
 
   if(!user || !(await user.checkPassword(password, user.password))){
     return next(new AppError('Sai email hoặc password', 401));
@@ -231,4 +233,32 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
       user
     }
   });
-})
+});
+
+exports.checkCookies = async (req, res, next) => {
+    if (req.cookies.jwt) return next();
+    else {
+      localStorage.clear();
+      return next(new AppError('Bạn đã xóa cookie, làm ơn đăng nhập lại', 500));
+    }
+};
+
+exports.logout = (req, res) => {
+  res.cookie('jwt', 'Userhasloggedout', {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true
+  })
+
+  res.status(200).json({
+    status: 'success'
+  })
+}
+
+exports.getRole = (req, res) => {
+  if(req.user.role){
+    res.status(200).json({
+      status: 'success',
+      role: req.user.role
+    });
+  } else return next(new AppError('Token sai', 404));
+}

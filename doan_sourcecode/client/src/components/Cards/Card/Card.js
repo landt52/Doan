@@ -26,11 +26,12 @@ const Cards = props => {
         {props.data.name}
       </Link>
     );
-    editButton = (
-      <Link to={{ pathname: `/${props.type}/edit/${props.data._id}` }}>
-        <button className='btn btn-primary'>Edit</button>
-      </Link>
-    );
+    editButton =
+      props.role === 'Admin' ? (
+        <Link to={{ pathname: `/${props.type}/edit/${props.data._id}` }}>
+          <button className='btn btn-primary'>Edit</button>
+        </Link>
+      ) : null;
     infoPageButton = (
       <Link to={{ pathname: `/${props.type}/info/${props.data._id}` }}>
         <button className='btn btn-primary'>Info Page</button>

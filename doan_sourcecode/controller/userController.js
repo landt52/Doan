@@ -1,6 +1,38 @@
 const User = require('./../models/userModel');
 const catchAsync = require('./../catchAsync');
 const AppError = require('./../Error');
+const multer = require('multer');
+const fs = require('fs');
+const cloudinary = require('cloudinary').v2;
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+const storage = multer.diskStorage({
+  destination: function(req, file, cb) {
+    cb(null, 'models');
+  },
+  filename: function(req, file, cb) {
+    cb(null, Date.now() + '-' + file.originalname);
+  }
+});
+
+const uploadAvatar = multer({
+  storage: storage,
+  fileFilter: function(req, file, callback) {
+    if (
+      ['png', 'jpeg', 'jpg'].indexOf(
+        file.originalname.split('.')[file.originalname.split('.').length - 1]
+      ) === -1
+    ) {
+      return next(new AppError('Sai đuôi file', 404));
+    }
+    callback(null, true);
+  }
+}).single('avatar');
 
 const filter = (obj, ...fields) => {
     const newObj = {};
@@ -13,7 +45,9 @@ const filter = (obj, ...fields) => {
 }
 
 exports.getAllUsers = catchAsync(async (req, res, next) => {
-    const users = await User.find();
+    const users = await User.find().select('-passwordChangedAt -role');
+
+    if (!users) return next(new AppError('Không tìm thấy thông tin', 404));
 
     res.status(200).json({
         status: 'success',
@@ -41,6 +75,19 @@ exports.updateInfo = catchAsync(async (req, res, next) => {
             user
         }
     })
+});
+
+exports.getInfo = catchAsync(async (req, res, next) => {
+    let user = await User.findOne(req.user._id);
+
+    if(!user) return next(new AppError('Không tìm thấy thông tin user', 404));
+
+    res.status(200).json({
+        status: 'success',
+        data: {
+            user
+        }
+    })
 })
 
 exports.deactivateUser = catchAsync(async (req, res, next) => {
@@ -50,4 +97,105 @@ exports.deactivateUser = catchAsync(async (req, res, next) => {
         status: 'success',
         data: null
     })
+});
+
+exports.getUser = catchAsync(async (req, res, next) => {
+  const user = await User.findById(req.params.id)
+
+  if (!user) {
+    return next(new AppError('Không tìm thấy thông tin của user', 404));
+  }
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      user
+    }
+  });
+});
+
+exports.updateUser = catchAsync(async (req, res, next) => {
+  const user = await User.findByIdAndUpdate(
+    req.params.id,
+    req.body,
+    {
+      new: true,
+      runValidators: true
+    }
+  );
+
+  if (!user) return next(new AppError('Không tìm thấy user', 404));
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      user
+    }
+  });
+});
+
+exports.deleteUser = catchAsync(async (req, res, next) => {
+  const user = await User.findByIdAndDelete(req.params.id);
+
+  if (!user) return next(new AppError('Không tìm thấy user', 404));
+
+  res.status(204).json({
+    status: 'success',
+    data: null
+  });
+});
+
+exports.changeAvatar = catchAsync(async (req, res, next) => {
+  await uploadAvatar(req, res, async err => {
+    if (!req.file) {
+      return next(new AppError('Không có file', 500));
+    }
+    if (err instanceof multer.MulterError) {
+      return next(new AppError('Có lỗi xảy ra khi đọc file', 500));
+    } else if (err) {
+      return next(new AppError('Có lỗi xảy ra', 500));
+    }
+    if (req.file) {
+      try {
+        const user = await User.findById(req.user._id);
+        if(user.photoId){
+          await cloudinary.uploader.destroy(user.photoId)
+          const newAvatar = await cloudinary.uploader.upload(req.file.path);
+
+          await User.findByIdAndUpdate(req.user.id, {
+            photo: newAvatar.secure_url,
+            photoId: newAvatar.public_id
+          }, {
+            new: true,
+            runValidators: true
+          });
+        }else{
+          const newAvatar = await cloudinary.uploader.upload(req.file.path);
+
+          await User.findByIdAndUpdate(
+            req.user.id,
+            {
+              photo: newAvatar.secure_url,
+              photoId: newAvatar.public_id
+            },
+            {
+              new: true,
+              runValidators: true
+            }
+          );
+        }
+
+        fs.unlink(req.file.path, () => {
+          res.status(201).json({
+            status: 'success'
+          });
+        });
+        
+      } catch (error) {
+        fs.unlink(req.file.path, () => {
+          return next(new AppError('Có lỗi xảy ra khi đọc file', 500));
+        });
+      }
+    }
+  });
 })

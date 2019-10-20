@@ -3,7 +3,14 @@
     padding: 0;
     list-style: none;
     display: flex;
-    align-content: stretch;
+    align-content: space-between;
     align-items: center;
     height: 100%;
+}
+
+.avatar{
+    vertical-align: middle;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
 }

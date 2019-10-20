@@ -14,6 +14,7 @@ const Cards = (props) => {
               data={card}
               type={props.type}
               key={card._id}
+              role={props.role}
             />
           );
         });
@@ -26,6 +27,7 @@ const Cards = (props) => {
               data={card}
               key={card.id}
               type={props.type}
+              role={props.role}
             />
           );
         });

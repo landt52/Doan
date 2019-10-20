@@ -11,6 +11,8 @@ import provincesReducer from './store/reducers/provinces';
 import districtsReducer from './store/reducers/districts';
 import provinceDataReducer from './store/reducers/provinceData';
 import aqiWeatherReducer from './store/reducers/AqiWeather';
+import authReducer from './store/reducers/auth';
+import locationReducer from './store/reducers/location';
 import logger from 'redux-logger';
 
 const composeEnhancers = process.env.NODE_ENV === 'development' ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ : null || compose;
@@ -20,7 +22,9 @@ const rootReducer = combineReducers({
   provinces: provincesReducer,
   districts: districtsReducer,
   provinceData: provinceDataReducer,
-  aqiWeather: aqiWeatherReducer
+  aqiWeather: aqiWeatherReducer,
+  auth: authReducer,
+  location: locationReducer
 });
 
 const store = createStore(
@@ -29,11 +33,11 @@ const store = createStore(
 );
 
 const app = (
-  <Provider store={store}>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
-  </Provider>
+    <Provider store={store}>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </Provider>
 );
 
 ReactDOM.render(app, document.getElementById('root'));

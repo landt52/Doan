@@ -3,6 +3,7 @@ import classes from './InfoDiv.css';
 import InfoCard from './InfoCard/InfoCard';
 
 function InfoDiv(props) {
+  console.log(props.data)
     let card = null;
     card =
       props.fetched &&

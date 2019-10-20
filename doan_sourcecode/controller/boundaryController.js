@@ -7,21 +7,24 @@ const AppError = require('./../Error');
 exports.getVnBoundaries = catchAsync(async (req, res, next) => {
   const results = database.getCityBoundaries();
 
-  const province = Province.find({}, {data: 1});
+  const province = Province.find({}, {data: 1, id: 1});
 
   const data = await Promise.all([results, province])
+  const provinceData = data[1].reduce(
+    (acc, cur) => Object.assign(acc, { [cur.id]: cur.data }),
+    {}
+  );
 
   if (data[0].length === 0 || data[1].length === 0) {
     return next(new AppError('Không tìm thấy', 404));
   }
-  const boundaries = data[0].map((row, idx) => {
+  const boundaries = data[0].map(row => {
     let geojson = JSON.parse(row.st_asgeojson);
     geojson.id = row.id;
     geojson.properties = { name: row.adm1_name };
-    geojson.properties.data = { something: data[1][idx].data };
+    geojson.properties.data = { something: provinceData[parseInt(row.id)] };
     return geojson;
   });
-  
   res.status(200).send({ status: 'success', boundaries });
 });
 
