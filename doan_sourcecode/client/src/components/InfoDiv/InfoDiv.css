@@ -3,10 +3,10 @@
     width: 25vw;
     box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
     position: absolute;
-    left: 0px;
-    top: 60px;
+    left: 0;
+    top: 0;
     background-color: white;
     z-index: 1000;
     overflow: scroll;
-    border-radius: 10px;
+    border-radius: 1rem;
 }

@@ -48,7 +48,7 @@ exports.getAllLocations = catchAsync(async (req, res, next) => {
     "location.address": 1,
     "location.phone": 1,
     "location.website": 1
-  })
+  }).populate("reviews");
 
   const locations = locationsData.map(row => ({
     type: row.location.type,
@@ -61,7 +61,8 @@ exports.getAllLocations = catchAsync(async (req, res, next) => {
       locationType: row.location.locationType,
       address: row.location.address,
       phone: row.location.phone,
-      website: row.location.website
+      website: row.location.website,
+      reviewsCount: row.reviews.length
     }
   }))
 
@@ -90,7 +91,7 @@ exports.getLocationsByType = catchAsync(async (req, res, next) => {
       'location.phone': 1,
       'location.website': 1
     }
-  )
+  ).populate("reviews")
 
   const locations = locationsData.map(row => ({
     type: row.location.type,
@@ -103,7 +104,8 @@ exports.getLocationsByType = catchAsync(async (req, res, next) => {
       locationType: row.location.locationType,
       address: row.location.address,
       phone: row.location.phone,
-      website: row.location.website
+      website: row.location.website,
+      reviewsCount: row.reviews.length
     }
   }));
 
@@ -193,7 +195,8 @@ exports.getLocationInfo = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: 'success',
     data: {
-      location
+      location,
+      reviewsCount: location.reviews.length
     }
   })
 });

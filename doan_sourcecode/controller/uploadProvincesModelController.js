@@ -36,7 +36,7 @@ const upload = multer({
 }).single('file');
 
 const convertType = value => {
-  var v = Number(value);
+  const v = Number(value);
   return !isNaN(v)
     ? v
     : value === 'undefined'

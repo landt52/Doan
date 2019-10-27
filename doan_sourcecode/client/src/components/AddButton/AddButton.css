@@ -1,0 +1,121 @@
+.addButton{
+    z-index: 1000;
+    position: absolute;
+    left: 3rem;
+    bottom: 3rem;
+    display: flex;
+	align-items: center;
+}
+
+.addButton:hover{
+	text-decoration: none;
+}
+
+.plus{
+    color: #50c878;
+    font-size: 2.5rem;
+}
+
+.plus svg{
+    align-self: center;
+}
+
+.button{
+    z-index: 1001;
+    position: relative;	
+	padding: 1.4rem 4.2rem;
+	padding-right: 3.1rem;
+	font-size: 1.4rem;
+	color: #fff;
+	letter-spacing: 1.1rem;
+	text-transform: uppercase;
+	transition: all 600ms cubic-bezier(0.77, 0, 0.175, 1);	
+	cursor: pointer;
+    user-select: none;
+    background-color: transparent;
+	border: none;
+} 
+
+.buttonSmall{
+    z-index: 1001;
+	padding: .5rem;
+	color: white;
+	background-color: #50c878;
+	text-transform: uppercase;
+	text-align: center;
+	margin: 1rem auto;
+	display: block;
+	transition: all 600ms cubic-bezier(0.77, 0, 0.175, 1);	
+	cursor: pointer;
+    user-select: none;
+	border: none;
+} 
+
+.buttonWeather{
+	position: absolute;
+	bottom: 5vh;
+	left: 1vw;
+	border-left: 1px solid white;
+	border-right: 1px solid white;
+}
+
+.buttonAqi{
+	position: absolute;
+	bottom: 15vh;
+	left: 1vw;
+	border-left: 1px solid white;
+	border-right: 1px solid white;
+}
+
+.buttonWeather:focus, .buttonAqi:focus{
+	outline: none;
+}
+
+.button:before, .button:after{
+	content: '';
+	position: absolute;	
+	transition: inherit;
+	z-index: -1;
+}
+
+.button:hover{
+	color: #50c878;
+	transition-delay: .6s;
+}
+
+.buttonSmall:hover{
+	background-color: white;
+	color: #50c878;
+}
+
+.button:hover:before, .buttonSmall:hover:before {
+	transition-delay: 0s;
+}
+
+.button:hover:after, .buttonSmall:hover:after {
+	background: #fff;
+	transition-delay: .4s;
+}
+
+.fromLeft:before, 
+.fromLeft:after {
+	top: 0;
+	width: 0;
+	height: 100%;
+}
+
+.fromLeft:before {
+	right: 0;
+	border: 1px solid #fff;
+	border-left: 0;
+	border-right: 0;	
+}
+
+.fromLeft:after {
+	left: 0;
+}
+
+.fromLeft:hover:before,
+.fromLeft:hover:after {
+	width: 100%;
+}

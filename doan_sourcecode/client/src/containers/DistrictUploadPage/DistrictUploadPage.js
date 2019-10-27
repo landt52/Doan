@@ -207,7 +207,7 @@ class DistrictUploadPage extends Component {
     return (
       <div className='container'>
         <div className='row'>
-          {chooseUpload}
+          {this.props.type === 'province' ? chooseUpload : null}
           <div className='offset-md-3 col-md-6'>
             <div className={`form-group ${classes.files}`}>
               <label>Upload your file</label>
@@ -232,22 +232,27 @@ class DistrictUploadPage extends Component {
             </button>
           </div>
         </div>
-        <Wysiwyg
-          onEditorStateChange={this.onEditorStateChange}
-          editorState={this.state.editorState}
-          uploadCallback={this.uploadImage}
-        />
-        <div className='row'>
-          <div className='offset-md-3 col-md-6 pt-5'>
-            <button
-              type='button'
-              className='btn btn-primary btn-block'
-              onClick={this.uploadInfo}
-            >
-              Change Info
-            </button>
-          </div>
-        </div>
+        {this.props.type === 'province' ? (
+          <React.Fragment>
+            <Wysiwyg
+              onEditorStateChange={this.onEditorStateChange}
+              editorState={this.state.editorState}
+              uploadCallback={this.uploadImage}
+              image={true}
+            />
+            <div className='row'>
+              <div className='offset-md-3 col-md-6 pt-5'>
+                <button
+                  type='button'
+                  className='btn btn-primary btn-block'
+                  onClick={this.uploadInfo}
+                >
+                  Change Info
+                </button>
+              </div>
+            </div>
+          </React.Fragment>
+        ) : null}
       </div>
     );
   }

@@ -1,0 +1,36 @@
+.layerPanel {
+    position: absolute;
+    top: 50vh;
+    right: 1rem;
+    padding: 1rem;
+    background: #50c878;
+    z-index: 1000;
+    color: white;
+    font-size: 1rem;
+}
+
+.layerPanel h3 {
+    text-align: center;
+    text-transform: uppercase;
+    margin: 0 auto;
+}
+
+.layerButtons {
+  text-transform: uppercase;
+}
+
+.layerButtons div {
+    color: grey;
+    border-top: 1px solid white;
+    padding: 6px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.layerButtons div.toggleActive {
+    color: white;
+}
+
+.layerButtons :last-child {
+    border-bottom: 1px solid white;
+}

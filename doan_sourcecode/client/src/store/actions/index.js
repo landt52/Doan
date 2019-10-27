@@ -33,5 +33,7 @@ export {
 } from './auth';
 
 export {
-    getAllLocations
+    getAllLocations,
+    selectedLocation,
+    getLocationInfo
 } from './location';

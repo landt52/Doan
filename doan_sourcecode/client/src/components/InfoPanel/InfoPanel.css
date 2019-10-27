@@ -1,0 +1,91 @@
+.infoContainer {
+    position: absolute;
+    bottom: 20%;
+    overflow-y: hidden;
+    left: 2rem;
+    z-index: 1000;
+    background: white;
+    opacity: .75;
+    width: 25%;
+    height: auto;
+    color: black;
+    transition: all 0.4s ease-in-out;
+    transform: translate(-150%, -10%); 
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem;
+}
+
+.infoContainer p{
+    margin: 0;
+}
+
+.info{  
+    flex-basis: 60%;
+    padding-bottom: .5rem;
+}
+
+.locationName{
+    font-size: 1.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #007bff;
+    display: block;
+}
+
+.locationName:hover, .locationType:hover{
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+.locationType{
+    font-size: 1.8rem;
+    color: #007bff;
+    cursor: pointer;
+}
+
+.starsOuter{
+    position: relative;
+    display: inline-block;
+}
+
+.starsInner{
+    position: absolute;
+    top: 0;
+    left: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    width: 0;
+}
+
+.starsOuter::before{
+    content: "\f005 \f005 \f005 \f005 \f005";
+    font-family: 'Font Awesome\ 5 Free';
+    font-weight: 900;
+    font-size: 1.6rem;
+    color: #ccc;
+    margin-right: 1rem;
+}
+
+.starsInner::before{
+    content: "\f005 \f005 \f005 \f005 \f005";
+    font-family: 'Font Awesome\ 5 Free';
+    font-weight: 900;
+    font-size: 1.6rem;
+    color: #f8ce0b;
+    margin-right: 1rem;
+}
+
+.infoPictureContainer{
+    flex-basis: 30%;
+}
+
+.infoPicture{
+    width: 100%;
+    height: auto;
+    border-radius: .5rem;
+}
+
+.infoContainer.infoActive {
+    transform: translate(0, -10%);
+}

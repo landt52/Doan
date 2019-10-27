@@ -106,6 +106,18 @@ class LocationUpload extends Component {
             {
               value: 'TouristAttraction',
               displayValue: 'Tourist Attraction'
+            },
+            {
+              value: 'Restaurant',
+              displayValue: 'Restaurant'
+            },
+            {
+              value: 'Hospital',
+              displayValue: 'Hospital'
+            },
+            {
+              value: 'Airport',
+              displayValue: 'Airport'
             }
           ]
         },
@@ -170,7 +182,7 @@ class LocationUpload extends Component {
     }
   };
 
-  createLocation = async (e) => {
+  createLocation = async e => {
     e.preventDefault();
     const data = new FormData();
     data.append('pics', this.state.selectedCover);
@@ -180,10 +192,13 @@ class LocationUpload extends Component {
     }
 
     const hours = this.state.hours;
-    for (var key in hours) {
+    for (let key in hours) {
       if (hours.hasOwnProperty(key)) {
         if (hours[key] === null) {
           hours[key] = 'Closed';
+        }
+        if(hours[key][0] === '00:00' && hours[key][1] === '00:00'){
+          hours[key] = 'Open 24 hours'
         }
       }
     }
@@ -301,7 +316,9 @@ class LocationUpload extends Component {
         <TimeRangePicker
           maxTime='23:59'
           minTime='00:00'
-          onChange={e => this.onTimeChange(day[0], e)}
+          onChange={e => {
+            this.onTimeChange(day[0], e);
+          }}
           id={day[0]}
           value={day[1]}
         />
@@ -355,6 +372,7 @@ class LocationUpload extends Component {
               <Wysiwyg
                 onEditorStateChange={this.onEditorStateChange}
                 editorState={this.state.editorState}
+                image={false}
               />
               <Button btnType='Success' disabled={!this.state.formIsValid}>
                 Create Location

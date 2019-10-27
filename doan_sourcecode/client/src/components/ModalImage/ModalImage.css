@@ -1,0 +1,93 @@
+.lpModalImage,
+.lpModalImage * {
+  align-content: center;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+}
+
+.lpModalImage {
+  width: 100%;
+}
+
+.lpModalImage>.image {
+  object-fit: cover;
+  opacity: 1;
+  margin: 1rem;
+  border-radius: 1rem;
+  transition: opacity 0.6s ease;
+  -webkit-transition: opacity 0.6s ease;
+  -moz-transition: opacity 0.6s ease;
+  -o-transition: opacity 0.6s ease;
+}
+
+.lpModalImage>.image:hover {
+  opacity: 0.7;
+  cursor: pointer;
+}
+
+.lpModalImage>.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  padding-top: 100px;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgb(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.9);
+}
+
+.lpModalImage>.modal>.modalContent {
+  margin: auto;
+  display: block;
+  width: 80%;
+  max-width: 780px;
+}
+
+.lpModalImage>.modal>.caption {
+  margin: auto;
+  display: block;
+  width: 80%;
+  max-width: 780px;
+  text-align: center;
+  color: #ccc;
+  padding: 10px 0;
+  height: 150px;
+}
+
+.lpModalImage>.modal>.modalContent,
+.lpModalImage>.modal>.caption {
+  animation-name: zoom;
+  animation-duration: 0.6s;
+}
+
+.lpModalImage>.modal>.close {
+  position: absolute;
+  top: 15px;
+  right: 35px;
+  color: #f1f1f1;
+  font-size: 40px;
+  font-weight: bold;
+  transition: color 0.3s;
+  -webkit-transition: color 0.3s;
+  -moz-transition: color 0.3s;
+  -o-transition: color 0.3s;
+}
+
+.lpModalImage>.modal>.close:hover,
+.lpModalImage>.modal>.close:focus {
+  color: #bbb;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+@keyframes zoom {
+  from {
+    transform: scale(0)
+  }
+  to {
+    transform: scale(1)
+  }
+}

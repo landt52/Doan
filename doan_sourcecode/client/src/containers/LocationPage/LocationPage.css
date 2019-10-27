@@ -1,0 +1,67 @@
+.locationPage{
+    margin: 2rem 25rem;
+}
+
+.locationPage>h1 {
+    font-size: 4rem;
+}
+
+.starsOuter{
+    position: relative;
+    display: inline-block;
+}
+
+.starsInner{
+    position: absolute;
+    top: 0;
+    left: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    width: 0;
+}
+
+.starsOuter::before{
+    content: "\f005 \f005 \f005 \f005 \f005";
+    font-family: 'Font Awesome\ 5 Free';
+    font-weight: 900;
+    font-size: 1.6rem;
+    color: #ccc;
+    margin-right: 1rem;
+}
+
+.starsInner::before{
+    content: "\f005 \f005 \f005 \f005 \f005";
+    font-family: 'Font Awesome\ 5 Free';
+    font-weight: 900;
+    font-size: 1.6rem;
+    color: #f8ce0b;
+    margin-right: 1rem;
+}
+
+.picsAndMap{
+    display: flex;
+    align-items: center;
+}
+
+.map{
+    flex-basis: 40%;
+    border: 1px solid #CDCDCD;
+}
+
+.map .info{
+    padding: 0 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.map .info h2{
+    flex-basis: 60%;
+    flex-grow: 1;
+    margin-left: .2rem;
+}
+
+.summaryAndBiz{
+    display: flex;
+}
+

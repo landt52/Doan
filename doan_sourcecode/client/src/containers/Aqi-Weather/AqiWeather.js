@@ -3,10 +3,10 @@ import Map from './AqiWeatherMap';
 import {connect} from 'react-redux';
 import * as actions from '../../store/actions/index';
 import ColorBar from '../../components/ColorBar/ColorBar';
-import {Button} from 'reactstrap';
 import Modal from '../../components/Modal/Modal';
 import WeatherCard from '../../components/WeatherCard/WeatherCard';
 import Auxiliary from '../../hoc/Auxiliary/Auxiliary';
+import classes from '../../components/AddButton/AddButton.css';
 
 class AqiWeather extends Component {
     componentDidMount(){
@@ -21,39 +21,38 @@ class AqiWeather extends Component {
     render() {
         return (
           <Auxiliary>
-            <Modal show={this.props.openModal} modalClosed={this.props.closeModal} >
+            <Modal
+              show={this.props.openModal}
+              modalClosed={this.props.closeModal}
+            >
               <WeatherCard data={this.props.properties} />
             </Modal>
             <Map zoom={6} lat={16.830832} lng={107.067261} />
-            <ColorBar type={this.props.type}/>
-            <Button
+            <ColorBar type={this.props.type} />
+            <button
               color='primary'
-              style={{
-                zIndex: '1000',
-                position: 'absolute',
-                bottom: '1rem',
-                left: '1rem',
-                fontSize: '1.6rem'
-              }}
+              className={[
+                classes.button,
+                classes.fromLeft,
+                classes.buttonWeather
+              ].join(' ')}
               value={'weather'}
               onClick={this.changeType}
             >
               Weather
-            </Button>
-            <Button
+            </button>
+            <button
               color='primary'
-              style={{
-                zIndex: '1000',
-                position: 'absolute',
-                bottom: '5rem',
-                left: '1rem',
-                fontSize: '1.6rem'
-              }}
+              className={[
+                classes.button,
+                classes.fromLeft,
+                classes.buttonAqi
+              ].join(' ')}
               value={'aqi'}
               onClick={this.changeType}
             >
               Aqi
-            </Button>
+            </button>
           </Auxiliary>
         );
     }

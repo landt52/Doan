@@ -14,10 +14,11 @@ export const getTypesSuccess = (types) => {
     }
 }
 
-export const getLocationsSuccess = (data) => {
+export const getLocationsSuccess = (data, type) => {
     return {
         type: actions.GET_LOCATIONS_SUCCESS,
-        data
+        data,
+        currentType: type
     }
 }
 
@@ -28,20 +29,33 @@ export const getInfoFailed = (err) => {
     }
 }
 
-export const getAllLocations = (type) => async dispatch => {
+export const getAllLocations = () => async dispatch => {
     dispatch(getLocationsStart());
     try {
-        if(!type){
-            const types = await axios('/api/location/types/types');
+        const types = await axios('/api/location/types/types');
+        dispatch(getTypesSuccess(types.data.locationTypes));
+        for(let type of types.data.locationTypes){
             const locations = await axios(
-            `/api/location/type/${types.data.locationTypes[0]}`
+              `/api/location/type/${type}`
             );
-            dispatch(getTypesSuccess(types.data.locationTypes));
-            dispatch(getLocationsSuccess(locations.data.locations));
-        }else{
-            
+            dispatch(getLocationsSuccess(locations.data.locations, type));
         }
     } catch (error) {
         dispatch(getInfoFailed(error));
     }  
+}
+
+export const selectedLocation = (result) => {
+    return {
+        type: actions.LOCATION_SELECTED,
+        result
+    }
+}
+
+export const getLocationInfo = (id, info) => {
+    return {
+        type: actions.GET_LOCATION_INFO,
+        id, 
+        info
+    }
 }

@@ -1,0 +1,54 @@
+.searchContainer {
+    position: absolute;
+    top: 5vh;
+    left: 1rem;
+    background: transparent;
+    z-index: 1000;
+    color: white;
+    box-sizing: border-box;
+}
+
+.searchContainer input[type=text] {
+    width: 5rem;
+    transition: width 0.4s ease-in-out;
+    cursor: pointer;
+}
+
+.searchContainer input[type=text]:focus {
+    width: 30vw;
+    outline: none;
+    cursor: text;
+}
+
+.searchResults {
+    margin-top: .5rem;
+    border-radius: .5rem;
+    background: #222;
+}
+
+.searchResults div {
+    padding: 1.4rem;
+    cursor: pointer;
+}
+
+.searchResults div:hover {
+    background: #333;
+}
+
+.searchBar, .searchInput {
+    height: 5rem;
+}
+
+.searchInput {
+    background-color: #333;
+    color: white;
+    border: .3rem #333 solid;
+    border-radius: .4rem;
+    font-size: 1.6rem;
+    padding: .4rem;
+    background-image: url('https://storage.googleapis.com/material-icons/external-assets/v4/icons/svg/ic_search_white_18px.svg');
+    background-position: 1.5rem 1.2rem;
+    background-size: 2.4rem 2.4rem;
+    background-repeat: no-repeat;
+    padding-left: 5rem;
+}

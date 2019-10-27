@@ -1,0 +1,119 @@
+.lpSlideshowGallery,
+.lpSlideshowGallery * {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+}
+
+.lpSlideshowGallery {
+  width: 100%;
+}
+
+.lpSlideshowGallery>.container {
+  position: relative;
+  margin: auto;
+  width: 100%;
+}
+
+.lpSlideshowGallery>.container>.slide {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  margin: auto;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  -webkit-transition: opacity 0.6s ease;
+  -moz-transition: opacity 0.6s ease;
+  -o-transition: opacity 0.6s ease;
+}
+
+.lpSlideshowGallery>.container>.slide.active {
+  opacity: 1;
+}
+
+.lpSlideshowGallery>.container>.slide>.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover
+}
+
+.lpSlideshowGallery>.container>.slide>.numberText {
+  color: #fff;
+  font-size: 1rem;
+  padding: 8px 12px;
+  position: absolute;
+  top: 0;
+}
+
+.lpSlideshowGallery>.container>.slide>.captionText {
+  color: #fff;
+  font-size: 1.3rem;
+  padding: 8px 12px;
+  position: absolute;
+  bottom: 0px;
+  width: 100%;
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.lpSlideshowGallery>.container>.prev,
+.lpSlideshowGallery>.container>.next {
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  width: auto;
+  margin-top: -22px;
+  padding: 16px;
+  font-size: 18px;
+  color: #fff;
+  font-weight: bold;
+  transition: background-color 0.6s ease;
+  -webkit-transition: background-color 0.6s ease;
+  -moz-transition: background-color 0.6s ease;
+  -o-transition: background-color 0.6s ease;
+}
+
+.lpSlideshowGallery:hover>.container>.prev,
+.lpSlideshowGallery:hover>.container>.next {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.lpSlideshowGallery:hover>.container>.prev:hover,
+.lpSlideshowGallery:hover>.container>.next:hover {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+.lpSlideshowGallery>.container>.next {
+  right: 0;
+  border-radius: 3px 0 0 3px;
+}
+
+.lpSlideshowGallery>.container>.prev {
+  left: 0;
+  border-radius: 0 3px 3px 0;
+}
+
+.lpSlideshowGallery>.containerBottom {
+  margin-bottom: 1rem;
+  display: flex;
+  display: -webkit-flex;
+  margin: 0 auto;
+}
+
+.lpSlideshowGallery>.containerBottom>.image {
+  flex: 1;
+  object-fit: cover;
+  opacity: 0.5;
+  transition: opacity 0.6s ease;
+  -webkit-transition: opacity 0.6s ease;
+  -moz-transition: opacity 0.6s ease;
+  -o-transition: opacity 0.6s ease;
+}
+
+.lpSlideshowGallery>.containerBottom>.image.active,
+.lpSlideshowGallery>.containerBottom>.image:hover {
+  opacity: 1;
+}
+.lpSlideshowGallery>.containerBottom>.image:not(.active):hover{
+  cursor: pointer;
+}
