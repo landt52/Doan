@@ -13,7 +13,7 @@ const VNPage = lazy(() => import('./containers/EditPage/VNPage'));
 const DistrictUploadPage = lazy(() => import('./containers/DistrictUploadPage/DistrictUploadPage'));
 const InfoPage = lazy(() => import('./containers/InfoPage/InfoPage'));
 const AqiWeather = lazy(() => import('./containers/Aqi-Weather/AqiWeather')); 
-const LocationUpload = lazy(() => import('./containers/LocationUpload.js/LocationUpload')); 
+const LocationUpload = lazy(() => import('./containers/LocationUpload/LocationUploadMap')); 
 const Login = lazy(() => import('./containers/Login/Login'));
 const Logout = lazy(() => import('./containers/Logout/Logout')); 
 const Signup = lazy(() => import('./containers/Signup/Signup'));
@@ -21,6 +21,8 @@ const UserPage = lazy(() => import('./containers/UserPage/UserPage'));
 const Provinces = lazy(() => import('./containers/Provinces/Provinces'));
 const Location = lazy(() => import('./containers/Location/Location'));
 const LocationInfo = lazy(() => import('./containers/LocationPage/LocationPage'));
+const Review = lazy(() => import('./containers/AddReview/AddReview'));
+const EditLocation = lazy(() => import('./containers/LocationEdit/LocationEdit'));
 
 class App extends Component {
   componentDidMount(){
@@ -87,6 +89,8 @@ class App extends Component {
                   component={LocationInfo}
                 />
                 <Route path='/addLocation' exact component={LocationUpload} />
+                <Route path='/location/:locationId/review' exact component={Review} />
+                <Route path='/location/edit/:locationId' exact component={EditLocation} />
                 <Route path='/logout' exact component={Logout} />
                 <Route path='/user' exact component={UserPage} />
                 <Route path='/' exact component={Provinces} />
@@ -119,12 +123,21 @@ class App extends Component {
                 <Route
                   path='/provinces/edit/:provinceId'
                   exact
-                  render={props => <DistrictUploadPage {...props} type='province' />}
+                  render={props => (
+                    <DistrictUploadPage {...props} type='province' />
+                  )}
                 />
                 <Route
                   path='/districts/edit/:districtId'
                   exact
-                  render={props => <DistrictUploadPage {...props} type='district' />}
+                  render={props => (
+                    <DistrictUploadPage {...props} type='district' />
+                  )}
+                />
+                <Route
+                  path='/location/edit/:locationId'
+                  exact
+                  component={EditLocation}
                 />
                 <Route path='/map' exact component={VNPage} />
                 <Route path='/aqi' exact component={AqiWeather} />
@@ -135,6 +148,11 @@ class App extends Component {
                   component={LocationInfo}
                 />
                 <Route path='/addLocation' exact component={LocationUpload} />
+                <Route
+                  path='/location/:locationId/review'
+                  exact
+                  component={Review}
+                />
                 <Route path='/logout' exact component={Logout} />
                 <Route path='/user' exact component={UserPage} />
                 <Route path='/' exact component={Provinces} />

@@ -49,7 +49,9 @@ class Location extends Component {
     }
 
     render() {
-        const addButton = this.props.isAuthenticated ? <AddButton /> : null
+        const addButton = this.props.isAuthenticated ? (
+          <AddButton link={'/addLocation'} />
+        ) : null;
 
         return (
           <React.Fragment>

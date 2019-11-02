@@ -1,4 +1,5 @@
 const Location = require('./../models/locationModel');
+const Review = require('./../models/reviewModel');
 const LocationType = require('./../models/typeModel');
 const multer = require('multer');
 const fs = require('fs');
@@ -218,14 +219,27 @@ exports.updateLocation = catchAsync(async (req, res, next) => {
 })
 
 exports.deleteLocation = catchAsync(async (req, res, next) => {
-  const location = await Location.findByIdAndDelete(req.params.locationId);
+  const location = await Location.findById(req.params.locationId).populate('reviews');
+  const reviewsID = location.reviews.map(review => review.id);
+  const deletePromise = location.location.imageID.map(
+    async id => await cloudinary.uploader.destroy(id)
+  );
+  const deleteReviewImage = location.reviews
+    .map(review => review.imageID)
+    .reduce((a, b) => a.concat(b), []).map(async id => await cloudinary.uploader.destroy(id))
+  const deleteReview = reviewsID.map(async reviewID => await Review.findByIdAndDelete(reviewID));
+  await cloudinary.uploader.destroy(location.location.coverId);
+  await Promise.all(deletePromise);
+  await Promise.all(deleteReviewImage);
+  await Promise.all(deleteReview);
+  await Location.findByIdAndDelete(req.params.locationId);
 
   if(!location) return next(new AppError('Không tìm thấy địa điểm', 404));
 
   res.status(204).json({
     status: 'success',
     data: null
-  })
+  });
 });
 
 exports.getLocationWithin = catchAsync(async (req, res, next) => {

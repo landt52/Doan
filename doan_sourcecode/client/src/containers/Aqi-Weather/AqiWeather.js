@@ -30,7 +30,6 @@ class AqiWeather extends Component {
             <Map zoom={6} lat={16.830832} lng={107.067261} />
             <ColorBar type={this.props.type} />
             <button
-              color='primary'
               className={[
                 classes.button,
                 classes.fromLeft,
@@ -42,7 +41,6 @@ class AqiWeather extends Component {
               Weather
             </button>
             <button
-              color='primary'
               className={[
                 classes.button,
                 classes.fromLeft,

@@ -19,6 +19,12 @@ router.delete('/deactivateUser', authController.authorize, authController.checkC
 router.get('/getRole', authController.authorize, authController.getRole);
 
 router.get('/myInfo', authController.authorize, authController.checkCookies, userController.getInfo)
+router.get(
+  '/myLocations',
+  authController.authorize,
+  authController.checkCookies,
+  userController.getMyLocations
+);
 
 router
   .route('/')

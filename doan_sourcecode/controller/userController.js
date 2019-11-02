@@ -199,3 +199,15 @@ exports.changeAvatar = catchAsync(async (req, res, next) => {
     }
   });
 })
+
+exports.getMyLocations = catchAsync(async (req, res, next) => {
+  const user = await User.findById(req.user._id).populate("locations",
+    "location.rating location.name location.cover");
+
+  if(!user) return next(new AppError('Không tìm thấy user', 404))
+
+  res.status(200).json({
+    status: 'success',
+    locations: user.locations
+  })
+})

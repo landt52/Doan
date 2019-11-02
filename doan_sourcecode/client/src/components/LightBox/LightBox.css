@@ -23,7 +23,6 @@
 .lpLightbox>.container>.imageWrapper>.image {
   object-fit: cover;
   width: 100%;
-  height: 100%;
   margin: 1rem;
   border-radius: 1rem;
   opacity: 1;
@@ -41,7 +40,7 @@
 .lpLightbox>.modal {
   visibility: hidden;
   position: fixed;
-  z-index: 1000;
+  z-index: 3000;
   padding-top: 100px;
   left: 0;
   top: 0;

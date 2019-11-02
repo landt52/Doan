@@ -12,6 +12,8 @@
     box-sizing: border-box;
     display: block;
     text-align: center;
+    font-weight: bold;
+    font-family: 'Lato', sans-serif;
 }
 
 .NavigationItem a:hover,

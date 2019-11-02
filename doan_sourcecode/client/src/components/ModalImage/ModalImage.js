@@ -41,8 +41,7 @@ function ModalImage(props) {
             onClick={showModal}
             ref={imageRef}
             style={{
-                width: `${props.length / 3 * 90}%`,
-                height: '100%'
+                width: `${props.length / 3 * 90}%`
             }}
             />
 

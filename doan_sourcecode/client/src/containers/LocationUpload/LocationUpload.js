@@ -6,8 +6,11 @@ import {Input} from 'reactstrap';
 import Button from '../../components/Button/Button';
 import { Label } from 'reactstrap';
 import Wysiwyg from '../../components/Wysiwyg/Wysiwyg';
-import { EditorState, convertToRaw } from 'draft-js';
+import { EditorState, convertToRaw, ContentState } from 'draft-js';
 import TimeRangePicker from '@wojtekmaj/react-timerange-picker';
+import classes from './LocationUpload.css'
+import draftToHtml from 'draftjs-to-html';
+import htmlToDraft from 'html-to-draftjs';
 
 class LocationUpload extends Component {
   state = {
@@ -15,34 +18,6 @@ class LocationUpload extends Component {
     selectedPics: null,
     editorState: EditorState.createEmpty(),
     forms: {
-      lat: {
-        elementType: 'input',
-        elementConfig: {
-          type: 'text',
-          placeholder: 'Latitude'
-        },
-        value: '',
-        validation: {
-          required: true,
-          isNumber: true
-        },
-        valid: false,
-        touched: false
-      },
-      lng: {
-        elementType: 'input',
-        elementConfig: {
-          type: 'text',
-          placeholder: 'Longitude'
-        },
-        value: '',
-        validation: {
-          required: true,
-          isNumber: true
-        },
-        valid: false,
-        touched: false
-      },
       name: {
         elementType: 'input',
         elementConfig: {
@@ -139,6 +114,44 @@ class LocationUpload extends Component {
     formIsValid: false
   };
 
+  componentDidUpdate(prevProps, prevState) {
+    if(prevProps.id !== this.props.id){
+      const html = draftToHtml(
+        JSON.parse(this.props.location.summary)
+      );
+      const contentBlock = htmlToDraft(html);
+      const contentState = ContentState.createFromBlockArray(
+          contentBlock.contentBlocks
+        );
+
+      const newState = {
+        ...this.state.forms,
+        name: {
+          ...this.state.forms.name,
+          value: this.props.location.name
+        },
+        website: {
+          ...this.state.forms.website,
+          value: this.props.location.website
+        },
+        phone: {
+          ...this.state.forms.phone,
+          value: this.props.location.phone
+        },
+        address: {
+          ...this.state.forms.address,
+          value: this.props.location.address
+        },
+        type: {
+          ...this.state.forms.type,
+          value: this.props.location.locationType.locationType
+        }
+      };
+      console.log(this.props.location)
+    }
+  }
+  
+
   checkValidity(value, rules) {
     let isValid = true;
 
@@ -206,8 +219,8 @@ class LocationUpload extends Component {
     const summary = convertToRaw(this.state.editorState.getCurrentContent());
 
     data.append('summary', JSON.stringify(summary));
-    data.append('lat', this.state.forms.lat.value);
-    data.append('lng', this.state.forms.lng.value);
+    data.append('lat', this.props.lat);
+    data.append('lng', this.props.lng);
     data.append('name', this.state.forms.name.value);
     data.append('address', this.state.forms.address.value);
     data.append('phone', this.state.forms.phone.value);
@@ -223,9 +236,9 @@ class LocationUpload extends Component {
         data
       });
       toast.success('Upload thành công');
-      this.props.history.push('/');
+      this.props.history.goBack();
     } catch ({ response }) {
-      toast.error(response.data.message);
+      toast.error(response);
     }
   };
 
@@ -348,38 +361,41 @@ class LocationUpload extends Component {
     ));
 
     return (
-      <div className='container'>
-        <div className='row'>
-          <div className='offset-md-3 col-md-6'>
-            <form onSubmit={this.createLocation}>
-              {form}
-              {timePicker}
-              <Label for='cover'>Upload cover image</Label>
-              <Input
-                type='file'
-                id='cover'
-                onChange={this.inputCover}
-                required
-              />
-              <Label for='pics'>Upload Pictures(max 3)</Label>
-              <Input
-                type='file'
-                id='pics'
-                multiple
-                onChange={this.inputPics}
-                required
-              />
-              <Wysiwyg
-                onEditorStateChange={this.onEditorStateChange}
-                editorState={this.state.editorState}
-                image={false}
-              />
-              <Button btnType='Success' disabled={!this.state.formIsValid}>
-                Create Location
-              </Button>
-            </form>
-          </div>
-        </div>
+      <div className={classes.locationUpload}>
+        <form onSubmit={this.createLocation}>
+          <CustomInput
+            key={"lat"}
+            id={"lat"}
+            elementType={"input"}
+            value={this.props.lat}
+          />
+          <CustomInput
+            key={form.id}
+            id={form.id}
+            elementType={"input"}
+            value={this.props.lng}
+          />
+          {form}
+          {timePicker}
+          <Label for='cover'>Upload cover image</Label>
+          <Input type='file' id='cover' onChange={this.inputCover} required />
+          <Label for='pics'>Upload Pictures(max 3)</Label>
+          <Input
+            type='file'
+            id='pics'
+            multiple
+            onChange={this.inputPics}
+            required
+          />
+          <Wysiwyg
+            onEditorStateChange={this.onEditorStateChange}
+            editorState={this.state.editorState}
+            image={false}
+          />
+          <Button btnType='Success' disabled={!this.state.formIsValid}>
+            Create Location
+          </Button>
+        </form>
       </div>
     );
   }

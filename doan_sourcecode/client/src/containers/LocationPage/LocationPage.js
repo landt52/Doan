@@ -3,12 +3,19 @@ import axios from 'axios';
 import {connect} from 'react-redux';
 import draftToHtml from 'draftjs-to-html';
 import classes from './LocationPage.css';
+import {toast} from 'react-toastify';
+import buttonClasses from '../../components/AddButton/AddButton.css';
 import LightBox from '../../components/LightBox/LightBox';
 import MiniMap from './MiniMap';
+import BusinessHours from '../../components/BusinessHours/BusinessHours';
+import { Link } from 'react-router-dom';
 import { FaMapPin, FaPhoneVolume, FaExternalLinkAlt } from 'react-icons/fa';
+import Spinner from '../../components/Spinner/Spinner';
+import Reviews from '../../components/Reviews/Reviews';
 
 class LocationPage extends Component {
   state = {
+    id: '',
     address: '',
     cover: '',
     hours: {},
@@ -41,10 +48,11 @@ class LocationPage extends Component {
         coordinates
       } = res.data.data.location.location;
       const { locationType } = res.data.data.location.location.locationType;
-      const { reviews } = res.data.data.location;
+      const { reviews, id } = res.data.data.location;
       const { reviewsCount } = res.data.data;
 
       this.setState({
+          id,
           address,
           cover,
           hours: Object.assign({}, this.state.hours, hours),
@@ -59,8 +67,6 @@ class LocationPage extends Component {
           reviews: [...this.state.reviews, ...reviews],
           reviewsCount,
           coordinates
-      }, () => {
-          console.log(this.state)
       })
     });
   }
@@ -81,13 +87,63 @@ class LocationPage extends Component {
   createMarkup = () => {
     return {
       __html: this.convertFromJSONToHTML(
-        this.props.provinceData.data.provinceData.info
+        this.state.summary
       )
     };
   };
 
+  deleteReview = async id => {
+      try {
+        await axios(`/api/review/${id}`, {
+          method: 'DELETE'
+        });
+        toast.success('Xóa review thành công')
+        this.props.history.goBack();
+      } catch ({response}) {
+        toast.error(response)
+      }
+  }
+
+  updateReview = async (reviewId, rating, review) => {
+    try {
+      const updateReview = await axios(`/api/review/${reviewId}`, {
+        method: 'PATCH',
+        data: {
+          rating,
+          review
+        }
+      })
+
+      const reviews = [...this.state.reviews];
+      const reviewIndex = this.state.reviews.findIndex(
+        review => review.id === updateReview.data.data.review.id
+      )
+      const updatedReview = {...reviews[reviewIndex], 
+        rating: updateReview.data.data.review.rating,
+        review: updateReview.data.data.review.review
+      }
+      reviews[reviewIndex] = updatedReview;
+
+      this.setState({reviews})
+    } catch ({response}) {
+      toast.error(response);
+    }
+  }
+
   render() {
-    return (
+    let reviews = this.state.reviews.length === 0 ? null : (
+      this.state.reviews.map(review => <Reviews 
+        key={review.id} 
+        userId={this.props.userId} 
+        data={review}
+        deleteReview={this.deleteReview}
+        editReview={this.updateReview}
+        />)
+    )
+
+    let content = !this.state.name ? (
+      <Spinner />
+    ) : (
       <div className={classes.locationPage}>
         <h1>{this.state.name}</h1>
         <div className={classes.starsOuter}>
@@ -126,15 +182,70 @@ class LocationPage extends Component {
         </div>
         <hr></hr>
         <div className={classes.summaryAndBiz}>
+          {this.state.summary ? (
+            <div
+              className={classes.summary}
+              dangerouslySetInnerHTML={this.createMarkup()}
+            ></div>
+          ) : null}
+          <BusinessHours hours={this.state.hours} />
         </div>
+        <hr></hr>
+        {!this.state.reviews.length ? (
+          <div className={classes.zeroReview}>
+            <h2>This location haven't got any review yet!</h2>
+            <Link
+              to={
+                this.props.isAuthenticated
+                  ? `/location/${this.state.id}/review`
+                  : `/login`
+              }
+              exact='true'
+              className={[
+                buttonClasses.button,
+                buttonClasses.buttonReview,
+                buttonClasses.fromLeft
+              ].join(' ')}
+            >
+              Add a review
+            </Link>
+          </div>
+        ) : this.state.reviews
+            .map(review => review.user._id)
+            .includes(this.props.userId) ? null : (
+          <Link
+            to={
+              this.props.isAuthenticated
+                ? `/location/${this.state.id}/review`
+                : `/login`
+            }
+            exact='true'
+            style={{ textDecoration: 'none' }}
+          >
+            <button
+              className={[
+                buttonClasses.button,
+                buttonClasses.buttonNormal,
+                buttonClasses.fromLeft
+              ].join(' ')}
+            >
+              Add Review
+            </button>
+          </Link>
+        )}
+        {reviews}
       </div>
     );
+
+    return content;
   }
 }
 
 const mapStateToProps = state => {
     return {
-        id: state.location.id
+        isAuthenticated: state.auth.jwt,
+        id: state.location.id,
+        userId: state.auth.id
     }
 }
 

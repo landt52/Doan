@@ -49,6 +49,23 @@
 	cursor: pointer;
     user-select: none;
 	border: none;
+	border-radius: .5rem;
+} 
+
+.buttonSmallDelete{
+	color: white;
+	padding: .5rem;
+	color: white;
+	background-color: #DC143C;
+	text-transform: uppercase;
+	text-align: center;
+	margin: 1rem auto;
+	display: block;
+	transition: all 600ms cubic-bezier(0.77, 0, 0.175, 1);	
+	cursor: pointer;
+    user-select: none;
+	border: none;
+	border-radius: .5rem;
 } 
 
 .buttonWeather{
@@ -67,7 +84,24 @@
 	border-right: 1px solid white;
 }
 
-.buttonWeather:focus, .buttonAqi:focus{
+.buttonReview{
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	color: #50c878;
+	font-weight: bold;
+}
+
+.buttonNormal{
+	margin-top: 3rem;
+	color: white;
+	background-color: #50c878;
+	display: block;
+	z-index: 1;
+}
+
+.buttonWeather:focus, .buttonAqi:focus, .buttonReview:focus, .buttonNormal:focus{
 	outline: none;
 }
 
@@ -81,18 +115,26 @@
 .button:hover{
 	color: #50c878;
 	transition-delay: .6s;
+	text-decoration: none;
 }
 
-.buttonSmall:hover{
+.buttonSmall:hover, .buttonNormal:hover{
 	background-color: white;
 	color: #50c878;
+	text-decoration: none;
 }
 
-.button:hover:before, .buttonSmall:hover:before {
+.buttonSmallDelete:hover{
+	background-color: white;
+	color: #DC143C;
+	text-decoration: none;
+}
+
+.button:hover:before, .buttonSmall:hover:before, .buttonNormal:hover:before {
 	transition-delay: 0s;
 }
 
-.button:hover:after, .buttonSmall:hover:after {
+.button:hover:after, .buttonSmall:hover:after, .buttonNormal:hover:after {
 	background: #fff;
 	transition-delay: .4s;
 }

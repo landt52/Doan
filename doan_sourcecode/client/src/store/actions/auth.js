@@ -14,7 +14,8 @@ export const authSuccess = (res) => {
         userName: res.userName,
         role: res.role,
         jwt: res.jwt,
-        photo: res.photo
+        photo: res.photo,
+        id: res.id
     }
 }
 
@@ -58,12 +59,14 @@ export const auth = (email, password) => dispatch => {
             localStorage.setItem('expirationDate', expirationDate);
             localStorage.setItem('userName', res.data.data.user.userName);
             localStorage.setItem('photo', res.data.data.user.photo);
+            localStorage.setItem('id', res.data.data.user._id)
 
             const data = {
               jwt: res.data.token,
               userName: res.data.data.user.userName,
               photo: res.data.data.user.photo,
-              role: res.data.data.user.role
+              role: res.data.data.user.role,
+              id: res.data.data.user._id
             };
             dispatch(authSuccess(data));
             dispatch(checkAuthTimeout(24 * 60 * 60 * 1000));
@@ -92,12 +95,14 @@ export const signup = (userName, email, password, passwordConfirm) => dispatch =
       localStorage.setItem('expirationDate', expirationDate);
       localStorage.setItem('userName', res.data.data.user.userName);
       localStorage.setItem('photo', res.data.data.user.photo);
+      localStorage.setItem('id', res.data.data.user._id)
 
       const data = {
         jwt: res.data.token,
         userName: res.data.data.user.userName,
         photo: res.data.data.user.photo,
-        role: res.data.data.user.role
+        role: res.data.data.user.role,
+        id: res.data.data.user._id
       };
       dispatch(authSuccess(data));
       dispatch(checkAuthTimeout(24 * 60 * 60 * 1000));
@@ -125,7 +130,7 @@ export const authCheckState = () => dispatch => {
       const photo = localStorage.getItem('photo');
 
       axios('/api/user/getRole').then(res => {
-        const data = { userName, photo, jwt, role: res.data.role };
+        const data = { userName, photo, jwt, role: res.data.role, id: res.data.id };
         dispatch(authSuccess(data));
         dispatch(
           checkAuthTimeout(expirationDate.getTime() - new Date().getTime())

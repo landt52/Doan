@@ -4,6 +4,10 @@ import Input from '../../components/Input/Input';
 import Button from '../../components/Button/Button';
 import classes from './UserPage.css';
 import { toast } from 'react-toastify';
+import buttonClasses from '../../components/AddButton/AddButton.css';
+import Spinner from '../../components/Spinner/Spinner';
+import {Link} from 'react-router-dom';
+import Rating from '@material-ui/lab/Rating';
 
 class UserPage extends Component {
   constructor(props) {
@@ -83,7 +87,9 @@ class UserPage extends Component {
         }
       },
       photo: '',
-      file: null
+      file: null,
+      mode: 'info',
+      myLocations: []
     };
 
     this.avatarChange = React.createRef();
@@ -250,6 +256,29 @@ class UserPage extends Component {
   }
   }
 
+  loadLocations = async () => {
+    this.setState({mode: 'location'});
+    try {
+      const data = await axios('/api/user/myLocations');
+      this.setState({myLocations: data.data.locations});
+    } catch ({response}) {
+      toast.error({response})
+    }
+  }
+
+  deleteReview = async id => {
+    try {
+      await axios(`/api/location/${id}`, {
+        method: 'DELETE'
+      });
+      toast.success('Xóa địa điểm thành công')
+      this.props.history.goBack()
+    } catch ({response}) {
+      toast.error({response})
+    }
+
+  }
+
   render() {
     const forms = [];
     for (let key in this.state.forms) {
@@ -292,31 +321,121 @@ class UserPage extends Component {
             ref={this.avatarChange}
             onChange={this.updateAvatar}
           />
-          <Button
-            btnType='Success'
-            clicked={this.changeAvatar}
-          >
+          <Button btnType='Success' clicked={this.changeAvatar}>
             Change Avatar
           </Button>
-        </div>
-        <div className={classes.Settings}>
-          <h1>Account Setting</h1>
-          <form className={classes.AccountSetting} onSubmit={this.submitInfo}>
-            {userName}
-            {email}
-            <Button btnType='Success'>Change Info</Button>
-          </form>
-          <br />
-          <hr className={classes.hr} />
-          <h1>Change Password</h1>
-          <form
-            className={classes.PasswordChange}
-            onSubmit={this.changePassword}
+          <button
+            style={{
+              letterSpacing: 0,
+              width: '100%',
+              background: 'transparent'
+            }}
+            className={[
+              buttonClasses.button,
+              buttonClasses.buttonNormal,
+              buttonClasses.fromLeft
+            ].join(' ')}
+            onClick={() => this.setState({ mode: 'info' })}
           >
-            {rest}
-            <Button btnType='Success'>Change Password</Button>
-          </form>
+            Change Info
+          </button>
+          <button
+            style={{
+              letterSpacing: 0,
+              width: '100%',
+              background: 'transparent'
+            }}
+            className={[
+              buttonClasses.button,
+              buttonClasses.buttonNormal,
+              buttonClasses.fromLeft
+            ].join(' ')}
+            onClick={this.loadLocations}
+          >
+            My Locations
+          </button>
+          <button
+            style={{
+              letterSpacing: 0,
+              width: '100%',
+              background: 'transparent'
+            }}
+            className={[
+              buttonClasses.button,
+              buttonClasses.buttonNormal,
+              buttonClasses.fromLeft
+            ].join(' ')}
+            onClick={() => this.setState({ mode: 'review' })}
+          >
+            My Reviews
+          </button>
         </div>
+        {this.state.mode === 'info' ? (
+          <div className={classes.Settings}>
+            <h1>Account Setting</h1>
+            <form className={classes.AccountSetting} onSubmit={this.submitInfo}>
+              {userName}
+              {email}
+              <Button btnType='Success'>Change Info</Button>
+            </form>
+            <br />
+            <hr className={classes.hr} />
+            <h1>Change Password</h1>
+            <form
+              className={classes.PasswordChange}
+              onSubmit={this.changePassword}
+            >
+              {rest}
+              <Button btnType='Success'>Change Password</Button>
+            </form>
+          </div>
+        ) : this.state.mode === 'location' ? (
+          <div>
+            {this.state.myLocations.length === 0 ? (
+              <Spinner />
+            ) : (
+              this.state.myLocations.map(location => (
+                <div key={location.id} className={classes.locationCard}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      flexGrow: 1
+                    }}
+                  >
+                    <Link
+                      to={{
+                        pathname: `/location/${location.id}`
+                      }}
+                    >
+                      {location.location.name}
+                    </Link>
+                    <Rating value={location.location.rating} readOnly />
+                    <Link to={{pathname: `/location/edit/${location.id}`}}>
+                      <button
+                        className={buttonClasses.buttonSmall}>
+                        Edit
+                      </button>
+                    </Link>
+                    <button
+                      className={buttonClasses.buttonSmallDelete}
+                      onClick={() => this.deleteReview(location.id)}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                  <img
+                    style={{ flexBasis: '20%', width: '20%' }}
+                    src={location.location.cover}
+                    alt={location.location.name}
+                  />
+                </div>
+              ))
+            )}
+          </div>
+        ) : (
+          <h2>HIIII</h2>
+        )}
       </div>
     );
   }

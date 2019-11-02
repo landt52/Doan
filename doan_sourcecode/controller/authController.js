@@ -258,7 +258,8 @@ exports.getRole = (req, res) => {
   if(req.user.role){
     res.status(200).json({
       status: 'success',
-      role: req.user.role
+      role: req.user.role,
+      id: req.user._id
     });
   } else return next(new AppError('Token sai', 404));
 }

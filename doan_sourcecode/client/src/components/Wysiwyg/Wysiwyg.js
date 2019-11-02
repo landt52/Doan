@@ -4,7 +4,6 @@ import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import classes from './Wysiwyg.css';
 
 function Wysiwyg(props) {
-  console.log(props.image)
     return (
       <div>
         {props.image ? (

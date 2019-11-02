@@ -6,7 +6,8 @@ const initialState = {
     userName: '',
     photo: '',
     role: '',
-    redirect: ''
+    redirect: '',
+    id: ''
 }
 
 const reducer = (state = initialState, action) => {
@@ -20,6 +21,7 @@ const reducer = (state = initialState, action) => {
                 loading: false, 
                 userName: action.userName,
                 photo: action.photo,
+                id: action.id
             })
         case actions.AUTH_FAILED:
             return Object.assign({}, state, {loading: false})
@@ -30,7 +32,8 @@ const reducer = (state = initialState, action) => {
               jwt: '',
               userName: '',
               photo: '',
-              role: ''
+              role: '',
+              id: ''
             });
         default: return state;
     }

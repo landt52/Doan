@@ -3,9 +3,9 @@ import classes from './AddButton.css';
 import {FaPlusCircle} from 'react-icons/fa';
 import {Link} from 'react-router-dom';
 
-function AddButton() {
+function AddButton(props) {
     return (
-        <Link to={'/addLocation'} exact='true' className={classes.addButton}>
+        <Link to={props.link} exact='true' className={classes.addButton}>
           <FaPlusCircle className={classes.plus} />
           <button
             type='button'

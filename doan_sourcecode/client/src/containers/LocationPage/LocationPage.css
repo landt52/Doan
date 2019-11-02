@@ -65,3 +65,17 @@
     display: flex;
 }
 
+.summary{
+    flex-basis: 71.5%;
+}
+
+.zeroReview{
+    text-align: center;
+    padding-top: 5rem;
+    position: relative;
+    background-color: #f4f4f4;
+    border-radius: .5rem;
+    height: 300px;
+    margin: 0 15%;
+}
+

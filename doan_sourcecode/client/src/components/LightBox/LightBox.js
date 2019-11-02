@@ -19,7 +19,7 @@ function LightBox(props) {
     }
 
     const updateDimension = () => {
-        const height = containerRef.current.offsetWidth / props.input.length / ratioWH;
+        const height = containerRef.current.offsetWidth / props.input.length / 3 / ratioWH;
         containerRef.current.style.height = `${height}px`;
     }
 
@@ -47,7 +47,6 @@ function LightBox(props) {
                 key={index}
                 className={classes.imageWrapper}
                 style={{
-                  width: `${(1 / props.input.length) * 100}%`,
                   height: `100%`
                 }}
               >

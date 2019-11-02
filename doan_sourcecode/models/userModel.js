@@ -58,6 +58,15 @@ const userSchema = new mongoose.Schema({
     default: true,
     select: false
   }
+},{
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
+});
+
+userSchema.virtual('locations', {
+  ref: 'Location',
+  foreignField: 'location.writer',
+  localField: '_id'
 });
 
 userSchema.pre('save', async function(next){

@@ -1,0 +1,22 @@
+.biz{
+    border-left: 1px solid #CDCDCD;
+    padding-left: 1rem;
+}
+
+.biz h2{
+    color: #d32323;
+}
+
+.table td{
+    padding-left: 1rem;
+}
+
+.table .Open{
+    color: #41a700;
+    font-weight: bold;
+}
+
+.table .Closed{
+    color: #d32323;
+    font-weight: bold;
+}
