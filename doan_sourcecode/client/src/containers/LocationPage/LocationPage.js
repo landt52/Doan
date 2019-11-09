@@ -100,7 +100,7 @@ class LocationPage extends Component {
         toast.success('Xóa review thành công')
         this.props.history.goBack();
       } catch ({response}) {
-        toast.error(response)
+        toast.error(response.data.message)
       }
   }
 

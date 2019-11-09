@@ -1,8 +1,11 @@
 const csv = require('csvtojson');
 const multer = require('multer');
 const fs = require('fs');
+const {promisify} = require('util');
 const District = require('./../models/districtModel');
 const AppError = require('./../Error');
+
+const unlink = promisify(fs.unlink);
 
 const storage = multer.diskStorage({
   destination: function(req, file, cb) {
@@ -63,10 +66,10 @@ exports.uploadDistrictsModel = async (req, res, next) => {
                   new: true
               })
             });
-            await fs.unlink(req.file.path);
+            await unlink(req.file.path);
             res.status(200).send({ status: 'success' });
       } catch (error) {
-          await fs.unlink(req.file.path);
+          await unlink(req.file.path);
           return next(new AppError('Có lỗi xảy ra khi đọc file', 500));
       }    
     }

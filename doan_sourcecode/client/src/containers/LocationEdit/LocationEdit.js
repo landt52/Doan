@@ -8,7 +8,8 @@ class LocationEdit extends Component {
         id: null,
         location: {},
         lat: 0,
-        lng: 0
+        lng: 0,
+        mode: 'edit'
     }
 
     componentDidMount(){    
@@ -23,7 +24,7 @@ class LocationEdit extends Component {
     }
 
     render() {
-        return <LocationUploadMap id={this.state.id} location={this.state.location} lat={this.state.lat} lng={this.state.lng}/>;
+        return <LocationUploadMap id={this.state.id} location={this.state.location} lat={this.state.lat} lng={this.state.lng} mode={this.state.mode}/>;
     }
 }
 

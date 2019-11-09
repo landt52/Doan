@@ -11,11 +11,10 @@ import TimeRangePicker from '@wojtekmaj/react-timerange-picker';
 import classes from './LocationUpload.css'
 import draftToHtml from 'draftjs-to-html';
 import htmlToDraft from 'html-to-draftjs';
+import {withRouter} from 'react-router-dom';
 
 class LocationUpload extends Component {
   state = {
-    selectedCover: null,
-    selectedPics: null,
     editorState: EditorState.createEmpty(),
     forms: {
       name: {
@@ -115,42 +114,67 @@ class LocationUpload extends Component {
   };
 
   componentDidUpdate(prevProps, prevState) {
-    if(prevProps.id !== this.props.id){
-      const html = draftToHtml(
-        JSON.parse(this.props.location.summary)
-      );
+    if (prevProps.id !== this.props.id) {
+      const html = draftToHtml(JSON.parse(this.props.locations.summary));
       const contentBlock = htmlToDraft(html);
       const contentState = ContentState.createFromBlockArray(
-          contentBlock.contentBlocks
-        );
+        contentBlock.contentBlocks
+      );
 
       const newState = {
         ...this.state.forms,
         name: {
           ...this.state.forms.name,
-          value: this.props.location.name
+          value: this.props.locations.name,
+          valid: true
         },
         website: {
           ...this.state.forms.website,
-          value: this.props.location.website
+          value: this.props.locations.website,
+          valid: true
         },
         phone: {
           ...this.state.forms.phone,
-          value: this.props.location.phone
+          value: this.props.locations.phone,
+          valid: true
         },
         address: {
           ...this.state.forms.address,
-          value: this.props.location.address
+          value: this.props.locations.address,
+          valid: true
         },
         type: {
           ...this.state.forms.type,
-          value: this.props.location.locationType.locationType
+          value: this.props.locations.locationType.locationType,
+          valid: true
         }
       };
-      console.log(this.props.location)
+
+      const newHours = {
+        ...this.state.hours,
+        Mon: this.convertHours(this.props.locations.hours.Mon),
+        Tue: this.convertHours(this.props.locations.hours.Tue),
+        Wed: this.convertHours(this.props.locations.hours.Wed),
+        Thu: this.convertHours(this.props.locations.hours.Thu),
+        Fri: this.convertHours(this.props.locations.hours.Fri),
+        Sat: this.convertHours(this.props.locations.hours.Sat),
+        Sun: this.convertHours(this.props.locations.hours.Sun)
+      };
+
+      this.setState({
+        forms: newState,
+        editorState: EditorState.createWithContent(contentState),
+        hours: newHours,
+        formIsValid: true
+      });
     }
   }
-  
+
+  convertHours = hour => {
+    if (hour === 'Closed') return null;
+    else if (hour === 'Open 24 hours') return ['00:00', '00:00'];
+    else return hour;
+  };
 
   checkValidity(value, rules) {
     let isValid = true;
@@ -210,8 +234,8 @@ class LocationUpload extends Component {
         if (hours[key] === null) {
           hours[key] = 'Closed';
         }
-        if(hours[key][0] === '00:00' && hours[key][1] === '00:00'){
-          hours[key] = 'Open 24 hours'
+        if (hours[key][0] === '00:00' && hours[key][1] === '00:00') {
+          hours[key] = 'Open 24 hours';
         }
       }
     }
@@ -238,7 +262,48 @@ class LocationUpload extends Component {
       toast.success('Upload thành công');
       this.props.history.goBack();
     } catch ({ response }) {
-      toast.error(response);
+      toast.error(response.data.message);
+    }
+  };
+
+  editLocation = async e => {
+    e.preventDefault();
+    let data;
+    const hours = this.state.hours;
+    for (let key in hours) {
+      if (hours.hasOwnProperty(key)) {
+        if (hours[key] === null) {
+          hours[key] = 'Closed';
+        }
+        if (hours[key][0] === '00:00' && hours[key][1] === '00:00') {
+          hours[key] = 'Open 24 hours';
+        }
+      }
+    }
+
+    const summary = convertToRaw(this.state.editorState.getCurrentContent());
+
+    data = {
+      summary: JSON.stringify(summary),
+      lat: this.props.lat,
+      lng: this.props.lng,
+      name: this.state.forms.name.value,
+      address: this.state.forms.address.value,
+      phone: this.state.forms.phone.value,
+      website: this.state.forms.website.value,
+      locationType: this.state.forms.type.value,
+      hours: JSON.stringify(hours),
+    };
+
+    try {
+      await axios(`/api/location/${this.props.id}`, {
+        method: 'PATCH',
+        data
+      });
+      toast.success('Upload thành công');
+      this.props.history.goBack();
+    } catch ({ response }) {
+      toast.error(response.data.message);
     }
   };
 
@@ -318,7 +383,6 @@ class LocationUpload extends Component {
       ...this.state.hours,
       [day]: time
     };
-
     this.setState({ hours: newTime });
   };
 
@@ -362,43 +426,64 @@ class LocationUpload extends Component {
 
     return (
       <div className={classes.locationUpload}>
-        <form onSubmit={this.createLocation}>
+        <form
+          onSubmit={
+            this.props.mode === 'edit' ? this.editLocation : this.createLocation
+          }
+        >
           <CustomInput
-            key={"lat"}
-            id={"lat"}
-            elementType={"input"}
+            key={'lat'}
+            id={'lat'}
+            elementType={'input'}
             value={this.props.lat}
+            readOnly
           />
           <CustomInput
             key={form.id}
             id={form.id}
-            elementType={"input"}
+            elementType={'input'}
             value={this.props.lng}
+            readOnly
           />
           {form}
           {timePicker}
-          <Label for='cover'>Upload cover image</Label>
-          <Input type='file' id='cover' onChange={this.inputCover} required />
-          <Label for='pics'>Upload Pictures(max 3)</Label>
-          <Input
-            type='file'
-            id='pics'
-            multiple
-            onChange={this.inputPics}
-            required
-          />
+          {this.props.mode === 'edit' ? null : (
+            <React.Fragment>
+              <Label for='cover'>Upload cover image</Label>
+              <Input
+                type='file'
+                id='cover'
+                onChange={this.inputCover}
+                required
+              />
+              <Label for='pics'>Upload Pictures(max 3)</Label>
+              <Input
+                type='file'
+                id='pics'
+                multiple
+                onChange={this.inputPics}
+                required
+              />
+            </React.Fragment>
+          )}
           <Wysiwyg
             onEditorStateChange={this.onEditorStateChange}
             editorState={this.state.editorState}
             image={false}
           />
-          <Button btnType='Success' disabled={!this.state.formIsValid}>
-            Create Location
-          </Button>
+          {this.props.mode === 'edit' ? (
+            <Button btnType='Success' disabled={!this.state.formIsValid}>
+              Edit
+            </Button>
+          ) : (
+            <Button btnType='Success' disabled={!this.state.formIsValid}>
+              Create Location
+            </Button>
+          )}
         </form>
       </div>
     );
   }
 }
 
-export default LocationUpload;
+export default withRouter(LocationUpload);

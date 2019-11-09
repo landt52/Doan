@@ -240,7 +240,7 @@ class DistrictUploadPage extends Component {
               uploadCallback={this.uploadImage}
               image={true}
             />
-            <div className='row'>
+            <div className='row' style={{marginBottom: '15rem'}}>
               <div className='offset-md-3 col-md-6 pt-5'>
                 <button
                   type='button'

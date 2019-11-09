@@ -115,7 +115,7 @@ class LocationUploadMap extends Component {
   render() {
     return (
       <React.Fragment>
-        <LocationUpload lat={this.state.lat} lng={this.state.lng} id={this.props.id} location={this.props.location}/>
+        <LocationUpload mode={this.props.mode} lat={this.state.lat} lng={this.state.lng} id={this.props.id} locations={this.props.location}/>
         <div
           id='map'
           style={{ height: '92vh', width: '100vw', marginTop: '0px' }}

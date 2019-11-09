@@ -26,6 +26,13 @@ router.get(
   userController.getMyLocations
 );
 
+router.get(
+  '/myReviews',
+  authController.authorize,
+  authController.checkCookies,
+  userController.getMyReviews
+);
+
 router
   .route('/')
   .get(

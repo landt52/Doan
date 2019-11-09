@@ -1,10 +1,12 @@
 const csv = require('csvtojson');
 const multer = require('multer');
 const fs = require('fs');
+const { promisify } = require('util');
 const Province = require('./../models/provincesModel');
 const AppError = require('./../Error');
 const catchAsync = require('./../catchAsync');
 const cloudinary = require('cloudinary').v2;
+const unlink = promisify(fs.unlink)
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_NAME,
@@ -80,10 +82,10 @@ exports.uploadProvincesModel = async (req, res, next) => {
               }
             );
           });
-        await fs.unlink(req.file.path);
+        await unlink(req.file.path);
         res.status(200).send({ status: 'success' });
       } catch (error) {
-        await fs.unlink(req.file.path);
+        await unlink(req.file.path);
         return next(new AppError('Có lỗi xảy ra khi đọc file', 500));
       }
     }
@@ -112,14 +114,14 @@ exports.uploadProvincesModel = async (req, res, next) => {
               {"$push": {"tables": newObj}}
             )
           });
-        await fs.unlink(req.file.path);
+        await unlink(req.file.path);
         res.status(200).send({ status: 'success' });
       } catch (error) {
-        await fs.unlink(req.file.path);
+        await unlink(req.file.path);
         return next(new AppError('Có lỗi xảy ra khi đọc file', 500));
       }
     }else{
-      await fs.unlink(req.file.path);
+      await unlink(req.file.path);
       return next(new AppError('Hãy điền tên dữ liệu', 500));
     }
   });
@@ -152,10 +154,10 @@ exports.uploadProvincePicture = async (req, res, next) => {
     if (req.file) {
       try {
         const result = await cloudinary.uploader.upload(req.file.path);
-        await fs.unlink(req.file.path);
+        await unlink(req.file.path);
         res.status(200).send({ url: result.secure_url });
       } catch (error) {
-        await fs.unlink(req.file.path);
+        await unlink(req.file.path);
         return next(new AppError('Có lỗi xảy ra khi đọc file', 500));
       }
     }

@@ -55,7 +55,7 @@ class Signup extends Component {
         elementType: 'input',
         elementConfig: {
           type: 'password',
-          placeholder: 'Password'
+          placeholder: 'Password Confirm'
         },
         value: '',
         validation: {

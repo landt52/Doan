@@ -3,10 +3,15 @@ import Cards from '../../components/Cards/Cards';
 import Spinner from '../../components/Spinner/Spinner';
 import {connect} from 'react-redux';
 import * as actions from '../../store/actions/index';
+import SearchBar from '../../components/SearchBar/SearchBar';
 
 class Districts extends Component {
   componentDidMount() {
     this.props.loadDistrictName();
+  }
+
+  filterDistricts = (e) => {
+    this.props.filterDistrictsName(e.target.value)
   }
 
   render() {
@@ -21,7 +26,8 @@ class Districts extends Component {
       
     return (
       <div>
-        <h1>Provinces</h1>
+        <h1 style={{textAlign: 'center'}}>Provinces</h1>
+        <SearchBar changed={this.filterDistricts}/>
         {cards}
       </div>
     );
@@ -30,13 +36,14 @@ class Districts extends Component {
 
 const mapStateToProps = state => {
   return {
-    districts: state.districts.districts
-  }
+    districts: state.districts.filteredDistricts
+  };
 }
 
 const mapDispatchToProps = dispatch => {
   return {
-    loadDistrictName: () => dispatch(actions.loadDistrictsName())
+    loadDistrictName: () => dispatch(actions.loadDistrictsName()),
+    filterDistrictsName: (target) => dispatch(actions.filterDistrictsName(target))
   }
 }
 

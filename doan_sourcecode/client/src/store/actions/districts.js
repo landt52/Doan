@@ -26,3 +26,10 @@ export const loadDistrictsName = () => dispatch => {
     axios('/api/districtsName').then(res => dispatch(loadDistrictsNameSuccess(res)))
     .catch(err => dispatch(loadDistrictsNameFailed(err)));
 }
+
+export const filterDistrictsName = (target) =>{
+    return {
+        type: actionsType.FILTER_DISTRICTS_NAME,
+        target
+    }
+}

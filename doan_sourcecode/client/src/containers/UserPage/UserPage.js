@@ -8,6 +8,8 @@ import buttonClasses from '../../components/AddButton/AddButton.css';
 import Spinner from '../../components/Spinner/Spinner';
 import {Link} from 'react-router-dom';
 import Rating from '@material-ui/lab/Rating';
+import Reviews from '../../components/Reviews/Reviews';
+import {connect} from 'react-redux';
 
 class UserPage extends Component {
   constructor(props) {
@@ -89,7 +91,8 @@ class UserPage extends Component {
       photo: '',
       file: null,
       mode: 'info',
-      myLocations: []
+      myLocations: null,
+      myReviews: null
     };
 
     this.avatarChange = React.createRef();
@@ -97,21 +100,23 @@ class UserPage extends Component {
   }
 
   componentDidMount() {
-    axios('/api/user/myInfo').then(res => {
-      const newFormsData = {
-        ...this.state.forms,
-        userName: {
-          ...this.state.forms['userName'],
-          value: res.data.data.user.userName
-        },
-        email: {
-          ...this.state.forms['email'],
-          value: res.data.data.user.email
-        }
-      };
+    axios('/api/user/myInfo')
+      .then(res => {
+        const newFormsData = {
+          ...this.state.forms,
+          userName: {
+            ...this.state.forms['userName'],
+            value: res.data.data.user.userName
+          },
+          email: {
+            ...this.state.forms['email'],
+            value: res.data.data.user.email
+          }
+        };
 
-      this.setState({ forms: newFormsData, photo: res.data.data.user.photo });
-    });
+        this.setState({ forms: newFormsData, photo: res.data.data.user.photo });
+      })
+      .catch(err => toast.error(err.response.data.message));
   }
 
   checkValidity(value, rules) {
@@ -231,53 +236,108 @@ class UserPage extends Component {
       this.checkFileType(event) &&
       this.checkFileSize(event)
     ) {
-      this.setState(
-        { photo: URL.createObjectURL(event.target.files[0]), file: event.target.files[0] }
-      );
+      this.setState({
+        photo: URL.createObjectURL(event.target.files[0]),
+        file: event.target.files[0]
+      });
     }
   };
 
   changeAvatar = async () => {
     const data = new FormData();
-    if(this.state.file) {
+    if (this.state.file) {
       data.append('avatar', this.state.file);
-    try {
-      await axios('/api/user/changeAvatar', {
-        method: 'PATCH',
-        headers: {
-          'content-type': 'multipart/form-data'
-        },
-        data
-      });
-      toast.success('Upload thành công');
-    } catch (error) {
-       toast.error(error.response.data.message);
+      try {
+        await axios('/api/user/changeAvatar', {
+          method: 'PATCH',
+          headers: {
+            'content-type': 'multipart/form-data'
+          },
+          data
+        });
+        toast.success('Upload thành công');
+      } catch (error) {
+        toast.error(error.response.data.message);
+      }
     }
-  }
-  }
+  };
 
   loadLocations = async () => {
-    this.setState({mode: 'location'});
+    this.setState({ mode: 'location' });
     try {
       const data = await axios('/api/user/myLocations');
-      this.setState({myLocations: data.data.locations});
-    } catch ({response}) {
-      toast.error({response})
+      this.setState({ myLocations: data.data.locations });
+    } catch ({ response }) {
+      toast.error(response.data.message);
     }
-  }
+  };
 
-  deleteReview = async id => {
+  loadReviews = async () => {
+    this.setState({ mode: 'review' });
+    try {
+      const data = await axios('/api/user/myReviews');
+      this.setState({ myReviews: data.data.reviews });
+    } catch ({ response }) {
+      toast.error(response.data.message);
+    }
+  };
+
+  deleteLocation = async id => {
     try {
       await axios(`/api/location/${id}`, {
         method: 'DELETE'
       });
-      toast.success('Xóa địa điểm thành công')
-      this.props.history.goBack()
-    } catch ({response}) {
-      toast.error({response})
+      toast.success('Xóa địa điểm thành công');
+      this.props.history.goBack();
+    } catch ({ response }) {
+      toast.error(response.data.message);
     }
+  };
 
-  }
+  updateReview = async (reviewId, rating, review) => {
+    try {
+      const updateReview = await axios(`/api/review/${reviewId}`, {
+        method: 'PATCH',
+        data: {
+          rating,
+          review
+        }
+      });
+
+      const reviews = [...this.state.myReviews];
+      const reviewIndex = this.state.myReviews.findIndex(
+        review => review.id === updateReview.data.data.review.id
+      );
+      const updatedReview = {
+        ...reviews[reviewIndex],
+        rating: updateReview.data.data.review.rating,
+        review: updateReview.data.data.review.review
+      };
+      reviews[reviewIndex] = updatedReview;
+
+      this.setState({ myReviews: reviews });
+    } catch ({ response }) {
+      toast.error(response.data.message);
+    }
+  };
+
+  deleteReview = async id => {
+    try {
+      await axios(`/api/review/${id}`, {
+        method: 'DELETE'
+      });
+
+      const remainReviews = this.state.myReviews.filter(
+        review => review.id !== id
+      );
+
+      this.setState({myReviews: remainReviews})
+
+      toast.success('Xóa review thành công');
+    } catch ({ response }) {
+      toast.error(response.data.message);
+    }
+  };
 
   render() {
     const forms = [];
@@ -365,7 +425,7 @@ class UserPage extends Component {
               buttonClasses.buttonNormal,
               buttonClasses.fromLeft
             ].join(' ')}
-            onClick={() => this.setState({ mode: 'review' })}
+            onClick={this.loadReviews}
           >
             My Reviews
           </button>
@@ -390,10 +450,10 @@ class UserPage extends Component {
             </form>
           </div>
         ) : this.state.mode === 'location' ? (
-          <div>
-            {this.state.myLocations.length === 0 ? (
+          <div style={{ width: '100%' }}>
+            {!this.state.myLocations ? (
               <Spinner />
-            ) : (
+            ) : this.state.myLocations.length !== 0 ? (
               this.state.myLocations.map(location => (
                 <div key={location.id} className={classes.locationCard}>
                   <div
@@ -411,15 +471,14 @@ class UserPage extends Component {
                       {location.location.name}
                     </Link>
                     <Rating value={location.location.rating} readOnly />
-                    <Link to={{pathname: `/location/edit/${location.id}`}}>
-                      <button
-                        className={buttonClasses.buttonSmall}>
+                    <Link to={{ pathname: `/location/edit/${location.id}` }}>
+                      <button className={buttonClasses.buttonSmall}>
                         Edit
                       </button>
                     </Link>
                     <button
                       className={buttonClasses.buttonSmallDelete}
-                      onClick={() => this.deleteReview(location.id)}
+                      onClick={() => this.deleteLocation(location.id)}
                     >
                       Delete
                     </button>
@@ -431,14 +490,38 @@ class UserPage extends Component {
                   />
                 </div>
               ))
+            ) : (
+              <h2 className={classes.notFound}>Bạn chưa tạo địa điểm</h2>
             )}
           </div>
         ) : (
-          <h2>HIIII</h2>
+          <div style={{ width: '100%' }}>
+            {!this.state.myReviews ? (
+              <Spinner />
+            ) : this.state.myReviews.length !== 0 ? (
+              this.state.myReviews.map(review => (
+                <Reviews
+                  key={review.id}
+                  userId={this.props.userId}
+                  data={review}
+                  deleteReview={this.deleteReview}
+                  editReview={this.updateReview}
+                />
+              ))
+            ) : (
+              <h2 className={classes.notFound}>Bạn chưa viết đánh giá</h2>
+            )}
+          </div>
         )}
       </div>
     );
   }
 }
 
-export default UserPage;
+const mapStateToProps = state => {
+  return {
+    userId: state.auth.id
+  };
+}
+
+export default connect(mapStateToProps)(UserPage);

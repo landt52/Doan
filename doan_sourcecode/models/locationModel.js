@@ -86,6 +86,25 @@ locationSchema.pre('save', async function(next){
   next();
 })
 
+locationSchema.pre(/^findOneAnd/, async function(next) {
+  if (this.getUpdate().$set['location.locationType']) {
+    const locationType = await LocationType.findOne({
+      locationType: this.getUpdate().$set['location.locationType']
+    });
+
+    if (!locationType) {
+      const defaultLocation = await LocationType.findOne({
+        locationType: 'Default'
+      });
+      this.getUpdate().$set['location.locationType'] = defaultLocation;
+    } else {
+      this.getUpdate().$set['location.locationType'] = locationType;
+    }
+  }else return next()
+
+  next();
+});
+
 const Location = mongoose.model('Location', locationSchema);
 
 module.exports = Location;

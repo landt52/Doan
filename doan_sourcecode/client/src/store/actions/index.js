@@ -5,11 +5,13 @@ export {
 } from './map';
 
 export {
-    loadProvincesCardData
+    loadProvincesCardData,
+    filterProvincesName
 } from './provinces';
 
 export {
-    loadDistrictsName
+    loadDistrictsName,
+    filterDistrictsName,
 } from './districts';
 
 export {

@@ -29,3 +29,10 @@ export const loadProvincesCardData = () => dispatch => {
         dispatch(loadProvincesCardFailed(err))
     })
 }
+
+export const filterProvincesName = target => {
+  return {
+    type: actionTypes.FILTER_PROVINCES_NAME,
+    target
+  };
+};

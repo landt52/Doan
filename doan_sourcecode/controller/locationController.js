@@ -203,10 +203,36 @@ exports.getLocationInfo = catchAsync(async (req, res, next) => {
 });
 
 exports.updateLocation = catchAsync(async (req, res, next) => {
-  const location = await Location.findByIdAndUpdate(req.params.locationId, req.body, {
-    new: true,
-    runValidators: true
-  })
+  const {
+    lat,
+    lng,
+    name,
+    locationType,
+    address,
+    summary,
+    phone,
+    website,
+    hours
+  } = req.body;
+
+  const location = await Location.findOneAndUpdate(
+    { _id: req.params.locationId},
+    { $set: {
+      "location.coordinates": [+lng, +lat],
+      "location.name": name,
+      "location.locationType": locationType,
+      "location.address": address,
+      "location.summary": summary,
+      "location.phone": phone,
+      "location.website": website,
+      "location.hours": JSON.parse(hours)
+    }},
+    {
+      new: true,
+      runValidators: true,
+      upsert: true
+    }
+  );
 
   if(!location) return next(new AppError('Không tìm thấy địa điểm', 404));
 
@@ -221,17 +247,32 @@ exports.updateLocation = catchAsync(async (req, res, next) => {
 exports.deleteLocation = catchAsync(async (req, res, next) => {
   const location = await Location.findById(req.params.locationId).populate('reviews');
   const reviewsID = location.reviews.map(review => review.id);
-  const deletePromise = location.location.imageID.map(
-    async id => await cloudinary.uploader.destroy(id)
-  );
-  const deleteReviewImage = location.reviews
-    .map(review => review.imageID)
-    .reduce((a, b) => a.concat(b), []).map(async id => await cloudinary.uploader.destroy(id))
-  const deleteReview = reviewsID.map(async reviewID => await Review.findByIdAndDelete(reviewID));
+  if(location.location.imageID.length !== 0){
+    const deletePromise = location.location.imageID.map(
+      async id => await cloudinary.uploader.destroy(id)
+    );
+    await Promise.all(deletePromise);
+  }
+
+  if(reviewsID.length !== 0){
+    const deleteReview = reviewsID.map(
+      async reviewID => await Review.findByIdAndDelete(reviewID)
+    );
+    await Promise.all(deleteReview);
+
+    const deleteReviewImage = location.reviews
+      .map(review => review.imageID)
+    
+    if(deleteReviewImage.length !== 0){
+      const deleteReviewImagePromises = deleteReviewImage
+        .reduce((cur, acc) => cur.concat(acc), [])
+        .map(async id => await cloudinary.uploader.destroy(id));
+
+      await Promise.all(deleteReviewImagePromises);
+    }
+  }  
+  
   await cloudinary.uploader.destroy(location.location.coverId);
-  await Promise.all(deletePromise);
-  await Promise.all(deleteReviewImage);
-  await Promise.all(deleteReview);
   await Location.findByIdAndDelete(req.params.locationId);
 
   if(!location) return next(new AppError('Không tìm thấy địa điểm', 404));
