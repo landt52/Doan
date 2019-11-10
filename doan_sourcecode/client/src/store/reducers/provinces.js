@@ -14,10 +14,10 @@ const filterProvince = (target, state) => {
     currentProvinces = state;
     // eslint-disable-next-line array-callback-return
     newProvinces = currentProvinces.filter(province => {
-      if (province.name !== null) {
-        const ld = province.name.toLowerCase();
+      if (province.realname) {
+        const lp = province.realname.toLowerCase();
         const lt = target.toLowerCase();
-        return ld.includes(lt);
+        return lp.includes(lt);
       }
     });
   } else {

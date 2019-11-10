@@ -11,6 +11,9 @@ const provinceSchema = new mongoose.Schema({
     required: [true, 'Quoc gia can co tinh - thanh pho'],
     unique: true
   },
+  realname: {
+    type: String
+  },
   data: {
     type: Object
   },

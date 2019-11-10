@@ -4,6 +4,9 @@ import L from 'leaflet';
 import Spinner from '../../components/Spinner/Spinner';
 import classes from './Map.css';
 import { selectMapBoundary } from './MapReselect';
+// import area from '@turf/area';
+// import * as turf from '@turf/helpers';
+// import centerOfMass from '@turf/center-of-mass';
 
 class Map extends Component {
   state = {
@@ -17,10 +20,13 @@ class Map extends Component {
       maxZoom: 20,
       minZoom: 6,
       layers: [
-        new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution:
-            'Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
-        })
+        new L.TileLayer(
+          'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png',
+          {
+            attribution:
+              '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
+          }
+        )
       ]
     });
 
@@ -52,27 +58,58 @@ class Map extends Component {
     };
 
     this.legend.update = () => {
-      let grades = [
-        0,
-        Math.floor(this.state.max / 5),
-        Math.floor((this.state.max * 2) / 5),
-        Math.floor((this.state.max * 3) / 5),
-        Math.floor((this.state.max * 4) / 5),
-        Math.floor(this.state.max)
-      ];
+      if(this.state.max !== 0){
+        let grades = [
+          0,
+          Math.floor(this.state.max / 5),
+          Math.floor((this.state.max * 2) / 5),
+          Math.floor((this.state.max * 3) / 5),
+          Math.floor((this.state.max * 4) / 5),
+          Math.floor(this.state.max)
+        ];
 
-      this.legend.div.innerHTML = '';
+        this.legend.div.innerHTML = '';
 
-      for (let i = 0; i < grades.length; i++) {
-        this.legend.div.innerHTML +=
-          `<i style="background: ${this.getColor(grades[i] + 1)}"></i>` +
-          grades[i] +
-          (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
-      }
+        for (let i = 0; i < grades.length; i++) {
+          this.legend.div.innerHTML +=
+            `<i style="background: ${this.getColor(grades[i] + 1)}"></i>` +
+            grades[i] +
+            (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+        }
+      }else this.legend.div.innerHTML = '';
     }
 
     this.layerGroup = L.layerGroup().addTo(this.map);
     this.legend.addTo(this.map);
+    this.map.createPane('labels');
+    this.map.getPane('labels').style.zIndex = 650;
+    this.map.getPane('labels').style.pointerEvents = 'none';
+
+    this.provinceName = L.control({position: 'bottomleft'})
+
+    this.provinceName.onAdd = () => {
+      this.provinceName.div = L.DomUtil.create(
+        'div',
+        [classes.info].join(' ')
+      );
+      return this.provinceName.div;
+    };
+
+    this.provinceName.update = (provinceName) => {
+      this.provinceName.div.innerHTML =
+        `<h1>${provinceName}</h1>`
+    };
+
+    this.provinceName.addTo(this.map);
+
+    L.tileLayer(
+      'https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png',
+      {
+        attribution:
+          '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+        pane: 'labels'
+      }
+    ).addTo(this.map);
   }
 
   componentDidUpdate(prevProps){
@@ -100,6 +137,7 @@ class Map extends Component {
         onEachFeature: this.onEachDistrict
       }).addTo(this.layerGroup);
     }
+    if(this.props.fetched) this.provinceName.update(this.props.boundary.boundaries[0].provincename[0].realname)
   }
 
   highlightFeature = e => {
@@ -138,6 +176,23 @@ class Map extends Component {
         mouseout: this.resetHighlight
       });
     }
+
+    // let max_area_polygon;
+    // let max_area = 0;
+
+    // for (let poly in feature.coordinates) {
+    //   const polygon = turf.polygon(feature.coordinates[poly]);
+    //   const a = area(polygon);
+
+    //   if (a > max_area) {
+    //     max_area = a;
+    //     max_area_polygon = polygon;
+    //   }
+    // }
+    // const center = centerOfMass(max_area_polygon);
+    // layer
+    //    .bindTooltip(feature.properties.name, { permanent: true, direction: 'center', className: classes.labelstyle })
+    //    .openTooltip();
   };
 
   getColor = d => {

@@ -1,0 +1,30 @@
+.userCard{
+    display: flex;
+    padding: 1rem;
+    align-items: center;
+}
+
+.userCard:not(:last-of-type){
+    border-bottom: 1px solid grey;
+}
+
+.avatar{
+    flex: 0 0 10%;
+    margin-right: 1rem;
+}
+
+.avatar img{
+    width: 5rem;
+    height: 5rem;
+    border-radius: 50%;
+    vertical-align: middle;
+}
+
+.info{
+    display: flex;
+    flex-direction: column;
+}
+
+.buttons{
+    margin-left: auto;
+}

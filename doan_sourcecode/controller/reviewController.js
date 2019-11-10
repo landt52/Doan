@@ -6,6 +6,7 @@ const AppError = require('./../Error');
 const cloudinary = require('cloudinary').v2;
 const util = require('util');
 const unlink = util.promisify(fs.unlink);
+const Role = require('./../models/Role');
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_NAME,
@@ -40,7 +41,6 @@ exports.getAllReviews = catchAsync(async (req, res, next) => {
     let filter = {};
     if(req.params.locationId) filter = {location: req.params.locationId}; 
     const reviews = await Review.find(filter);
-
     res.status(200).json({
         status: 'success',
         data: {
@@ -107,7 +107,9 @@ exports.deleteReview = catchAsync(async (req, res, next) => {
   try {
     const review = await Review.findById(req.params.id);
 
-    if(review.user._id != req.user.id) return next(new AppError('Bạn không có quyền thực hiện điều này', 404))
+    if(req.user.role !== Role.Admin){
+      if(review.user._id != req.user.id) return next(new AppError('Bạn không có quyền thực hiện điều này', 404))
+    }
 
     const deletePromise = review.imageID.map(async id => await cloudinary.uploader.destroy(id));
     Promise.all(deletePromise);
@@ -143,8 +145,10 @@ exports.getReview = catchAsync(async (req, res, next) => {
 exports.updateReview = catchAsync(async (req, res, next) => {
   const review = await Review.findById(req.params.id);
 
-  if (review.user._id != req.user.id)
-    return next(new AppError('Bạn không có quyền thực hiện điều này', 404));
+  if (req.user.role !== Role.Admin) {
+    if (review.user._id != req.user.id)
+      return next(new AppError('Bạn không có quyền thực hiện điều này', 404));
+  }
 
   const reviewToUpdate = await Review.findByIdAndUpdate(req.params.id, req.body, {
     new: true,

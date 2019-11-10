@@ -1,5 +1,5 @@
 .UserPage{
-    margin: 10vh 20vw;
+    margin: 10vh 15%;
     border-radius: 3px;
     box-shadow: 0 3px 2px #777;
     display: flex;
@@ -39,7 +39,7 @@
     flex-direction: column;
     align-items: center;
     text-align: center;
-    flex: 0 0 20%;
+    flex: 0 0 25%;
 }
 
 .avatar{

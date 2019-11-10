@@ -5,6 +5,9 @@
   "dependencies": {
     "@babel/core": "7.4.3",
     "@svgr/webpack": "4.1.0",
+    "@turf/area": "^6.0.1",
+    "@turf/center-of-mass": "^6.0.1",
+    "@turf/helpers": "^6.1.4",
     "@typescript-eslint/eslint-plugin": "1.6.0",
     "@typescript-eslint/parser": "1.6.0",
     "@wojtekmaj/react-timerange-picker": "^2.3.0",

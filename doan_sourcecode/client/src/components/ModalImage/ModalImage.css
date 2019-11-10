@@ -28,7 +28,7 @@
 
 .lpModalImage>.modal {
   display: none;
-  position: fixed;
+  position: absolute;
   z-index: 1000;
   padding-top: 100px;
   left: 0;

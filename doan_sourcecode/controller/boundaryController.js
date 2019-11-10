@@ -33,9 +33,9 @@ exports.getProvinceBoundary = catchAsync(async (req, res, next) => {
 
   const results = database.getDistrictBoundaries(provinceBoundary);
   const district = District.find({ provincename: provinceBoundary }, {districtname: 1, data:1});
+  const provincename = Province.find({ provincename: provinceBoundary}, {realname: 1})
 
-  const data = await Promise.all([results, district])
-
+  const data = await Promise.all([results, district, provincename])
   if (data[0].length === 0 || data[1].length === 0) {
     return next(new AppError('Không tìm thấy', 404))
   }
@@ -43,6 +43,7 @@ exports.getProvinceBoundary = catchAsync(async (req, res, next) => {
   const boundaries = data[0].map((row, idx) => {
     let geojson = JSON.parse(row.st_asgeojson);
     geojson.id = row.id;
+    geojson.provincename = data[2];
     geojson.properties = { name: row.adm2_name_ };
     geojson.properties.data = { something: data[1][idx].data };
     return geojson;

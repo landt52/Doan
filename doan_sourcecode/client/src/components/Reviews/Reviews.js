@@ -60,7 +60,7 @@ function Reviews(props) {
             <p>{props.data.user.userName}</p>
             <img src={props.data.user.photo} alt='' />
           </div>
-          {props.userId === props.data.user._id ? (
+          {(props.userId === props.data.user._id || props.role === 'Admin') ? (
             <div className={classes.buttons}>
               {!editing ? (
                 <button

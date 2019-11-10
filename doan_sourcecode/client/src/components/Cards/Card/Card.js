@@ -23,7 +23,7 @@ const Cards = props => {
           search: `?lat=${props.data.lat}&lng=${props.data.lng}`
         }}
       >
-        {props.data.name}
+        {props.data.realname}
       </Link>
     );
     editButton =

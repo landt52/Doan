@@ -91,7 +91,7 @@ exports.getInfo = catchAsync(async (req, res, next) => {
 })
 
 exports.deactivateUser = catchAsync(async (req, res, next) => {
-    await User.findByIdAndUpdate(req.user.id, {active: false})
+    await User.findByIdAndUpdate(req.params.id, {active: false})
 
     res.status(204).json({
         status: 'success',
@@ -215,7 +215,7 @@ exports.getMyLocations = catchAsync(async (req, res, next) => {
 exports.getMyReviews = catchAsync(async (req, res, next) => {
   const user = await User.findById(req.user._id).populate('reviews');
   if(!user) return next(new AppError('Không tìm thấy user', 404));
-
+  
   res.status(200).json({
     status: 'success',
     reviews: user.reviews

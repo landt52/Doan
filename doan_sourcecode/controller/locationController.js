@@ -8,6 +8,7 @@ const catchAsync = require('./../catchAsync');
 const cloudinary = require('cloudinary').v2;
 const util = require('util');
 const unlink = util.promisify(fs.unlink);
+const Role = require('./../models/Role');
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_NAME,
@@ -40,39 +41,18 @@ const uploadPics = multer({
 
 exports.getAllLocations = catchAsync(async (req, res, next) => {
   const locationsData = await Location.find({}, {
-    "location.type": 1,
     "location.rating": 1,
-    "location.coordinates": 1,
     "location.name": 1,
-    "location.locationType": 1,
     "location.cover": 1,
-    "location.address": 1,
-    "location.phone": 1,
-    "location.website": 1
-  }).populate("reviews");
+    "location.writer": 1
+  });
 
-  const locations = locationsData.map(row => ({
-    type: row.location.type,
-    coordinates: row.location.coordinates,
-    id: row._id,
-    properties: {
-      rating: row.location.rating,
-      name: row.location.name,
-      cover: row.location.cover,
-      locationType: row.location.locationType,
-      address: row.location.address,
-      phone: row.location.phone,
-      website: row.location.website,
-      reviewsCount: row.reviews.length
-    }
-  }))
-
-  if(!locations) return next(new AppError('Không tìm thấy địa điểm', 404))
+  if(!locationsData) return next(new AppError('Không tìm thấy địa điểm', 404))
 
   res.status(200).json({
     status: 'success',
     data: {
-      locations
+      locationsData
     }
   });
 });
@@ -215,6 +195,12 @@ exports.updateLocation = catchAsync(async (req, res, next) => {
     hours
   } = req.body;
 
+  const checkAuth = await Location.findOne({ _id: req.params.locationId }, {"location.writer": 1});
+  if(req.user.role !== Role.Admin){
+    if (checkAuth.location.writer !== req.user._id)
+      return next(new AppError('Bạn không có quyền thực hiện điều này', 404));
+  }
+
   const location = await Location.findOneAndUpdate(
     { _id: req.params.locationId},
     { $set: {
@@ -245,6 +231,15 @@ exports.updateLocation = catchAsync(async (req, res, next) => {
 })
 
 exports.deleteLocation = catchAsync(async (req, res, next) => {
+  const checkAuth = await Location.findOne(
+    { _id: req.params.locationId },
+    { 'location.writer': 1 }
+  );
+  if (req.user.role !== Role.Admin) {
+    if (checkAuth.location.writer !== req.user._id)
+      return next(new AppError('Bạn không có quyền thực hiện điều này', 404));
+  }
+
   const location = await Location.findById(req.params.locationId).populate('reviews');
   const reviewsID = location.reviews.map(review => review.id);
   if(location.location.imageID.length !== 0){

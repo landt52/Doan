@@ -12,9 +12,14 @@ import classes from './LocationUpload.css'
 import draftToHtml from 'draftjs-to-html';
 import htmlToDraft from 'html-to-draftjs';
 import {withRouter} from 'react-router-dom';
+import ModalImage from '../../components/ModalImage/ModalImage';
 
 class LocationUpload extends Component {
   state = {
+    selectedCover: null,
+    selectedCoverURL: null,
+    selectedPics: [],
+    selectedPicsURL: [],
     editorState: EditorState.createEmpty(),
     forms: {
       name: {
@@ -205,7 +210,8 @@ class LocationUpload extends Component {
       this.checkFileType(event) &&
       this.checkFileSize(event)
     ) {
-      this.setState({ selectedCover: event.target.files[0] });
+      const url = URL.createObjectURL(event.target.files[0]); 
+      this.setState({ selectedCover: event.target.files[0], selectedCoverURL: url });
     }
   };
 
@@ -215,7 +221,10 @@ class LocationUpload extends Component {
       this.checkFileType(event) &&
       this.checkFileSize(event)
     ) {
-      this.setState({ selectedPics: event.target.files });
+      const url = Array.from(event.target.files).map(picture =>
+        URL.createObjectURL(picture)
+      );
+      this.setState({ selectedPics: event.target.files, selectedPicsURL: [...url] });
     }
   };
 
@@ -387,6 +396,7 @@ class LocationUpload extends Component {
   };
 
   render() {
+    let previewCover, previewImages;
     const timePicker = Object.entries(this.state.hours).map(day => (
       <div key={day[0]}>
         <Label for={day[0]}>{day[0]}</Label>
@@ -424,6 +434,31 @@ class LocationUpload extends Component {
       />
     ));
 
+    previewCover = this.state.selectedCover ? (
+      <div style={{ display: 'flex', width: '100%' }}>
+          <ModalImage
+            image={this.state.selectedCoverURL}
+            alt=''
+            ratio={`3:2`}
+            length={1}
+          />
+      </div>
+    ) : null;
+
+    previewImages =
+      this.state.selectedPicsURL.length !== 0 ? (
+        <div style={{ display: 'flex', width: '100%' }}>
+          {this.state.selectedPicsURL.map(url => (
+            <ModalImage
+              image={url}
+              alt=''
+              ratio={`3:2`}
+              length={this.state.selectedPicsURL.length}
+            />
+          ))}
+        </div>
+      ) : null;
+
     return (
       <div className={classes.locationUpload}>
         <form
@@ -456,6 +491,7 @@ class LocationUpload extends Component {
                 onChange={this.inputCover}
                 required
               />
+              {previewCover}
               <Label for='pics'>Upload Pictures(max 3)</Label>
               <Input
                 type='file'
@@ -464,6 +500,7 @@ class LocationUpload extends Component {
                 onChange={this.inputPics}
                 required
               />
+              {previewImages}
             </React.Fragment>
           )}
           <Wysiwyg

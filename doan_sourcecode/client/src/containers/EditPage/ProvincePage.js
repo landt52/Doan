@@ -20,8 +20,12 @@ class ProvincePage extends Component {
   render() {
     return (
       <Auxiliary>
-        <InfoDiv data={this.props.data} onclicked={this.click} fetched={this.props.fetched}/>
-        <Map zoom={9} />
+        <InfoDiv
+          data={this.props.data}
+          onclicked={this.click}
+          fetched={this.props.fetched}
+        />
+        <Map zoom={9} provinceName={this.props.provinceName} />
       </Auxiliary>
     );
   }
@@ -30,7 +34,8 @@ class ProvincePage extends Component {
 const mapStateToProps = state => {
   return {
     data: state.map.boundary.boundaries,
-    fetched: state.map.fetched
+    fetched: state.map.fetched,
+    provinceName: state.map.provinceName
   }
 }
 

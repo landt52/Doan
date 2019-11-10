@@ -87,9 +87,10 @@ locationSchema.pre('save', async function(next){
 })
 
 locationSchema.pre(/^findOneAnd/, async function(next) {
-  if (this.getUpdate().$set['location.locationType']) {
+  if(this.op === 'findOneAndDelete' || this.op === 'findOne') return next();
+  if (this.getUpdate()['$set']['location.locationType']) {
     const locationType = await LocationType.findOne({
-      locationType: this.getUpdate().$set['location.locationType']
+      locationType: this.getUpdate()['$set']['location.locationType']
     });
 
     if (!locationType) {
@@ -100,9 +101,8 @@ locationSchema.pre(/^findOneAnd/, async function(next) {
     } else {
       this.getUpdate().$set['location.locationType'] = locationType;
     }
+    return next();
   }else return next()
-
-  next();
 });
 
 const Location = mongoose.model('Location', locationSchema);

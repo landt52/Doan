@@ -15,7 +15,13 @@ router.patch('/resetPassword/:token', authController.resetPassword);
 router.patch('/updatePassword', authController.authorize, authController.checkCookies, authController.updatePassword);
 router.patch('/updateInfo', authController.authorize, authController.checkCookies, userController.updateInfo);
 router.patch('/changeAvatar', authController.authorize, authController.checkCookies, userController.changeAvatar);
-router.delete('/deactivateUser', authController.authorize, authController.checkCookies, userController.deactivateUser);
+router.delete(
+  '/deactivateUser/:id',
+  authController.authorize,
+  authController.checkCookies,
+  authController.restrict(Role.Admin),
+  userController.deactivateUser
+);
 router.get('/getRole', authController.authorize, authController.getRole);
 
 router.get('/myInfo', authController.authorize, authController.checkCookies, userController.getInfo)

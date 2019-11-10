@@ -27,6 +27,12 @@ tr:nth-of-type(even) {
 	color: #777;
 }
 
+.info h1{
+	font-size: 4rem;
+	color: #777;
+	text-transform: uppercase;
+}
+
 .legend {
 	line-height: 18px;
 	color: #555;
