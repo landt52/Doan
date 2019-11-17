@@ -121,8 +121,21 @@ class Login extends Component {
         <form onSubmit={this.submit}>
           {form}
           {redirect}
-          <Button disabled={!this.state.formIsValid} btnType='Success'>SUBMIT</Button>
-          <p>Dont' have account yet ? <Link to="/signup" exact="true">Signup</Link></p>
+          <Button disabled={!this.state.formIsValid} btnType='Success'>
+            SUBMIT
+          </Button>
+          <p>
+            Dont' have account yet ?{' '}
+            <Link to='/signup' exact='true'>
+              Signup
+            </Link>
+          </p>
+          <p>
+            Forgot Password ?{' '}
+            <Link to='/forgotPassword' exact='true'>
+              Forgot Password
+            </Link>
+          </p>
         </form>
       </div>
     );

@@ -23,6 +23,7 @@ const Location = lazy(() => import('./containers/Location/Location'));
 const LocationInfo = lazy(() => import('./containers/LocationPage/LocationPage'));
 const Review = lazy(() => import('./containers/AddReview/AddReview'));
 const EditLocation = lazy(() => import('./containers/LocationEdit/LocationEdit'));
+const ForgotPassword = lazy(() => import('./containers/ForgotPassword/ForgotPassword'));
 
 class App extends Component {
   componentDidMount(){
@@ -55,6 +56,7 @@ class App extends Component {
               />
               <Route path='/login' exact component={Login} />
               <Route path='/signup' exact component={Signup} />
+              <Route path='/forgotPassword' exact component={ForgotPassword} />
               <Route path='/' exact component={Provinces} />
               <Redirect to='/' />
             </ErrorBoundary>
