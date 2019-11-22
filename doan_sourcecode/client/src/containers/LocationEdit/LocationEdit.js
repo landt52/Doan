@@ -18,7 +18,8 @@ class LocationEdit extends Component {
                 const {id, location} = res.data.data.location
                 const lat = location.coordinates[1];
                 const lng = location.coordinates[0];
-                this.setState({id, location, lat, lng})
+                this.setState({id, location, lat, lng}, () => {
+                })
             })
             .catch(({response}) => toast.error(response));
     }

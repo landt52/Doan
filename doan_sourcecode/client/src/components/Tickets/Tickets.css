@@ -1,0 +1,17 @@
+.ticket{
+    margin: 1rem 2rem 0 2rem;
+    padding: 0 0 1rem 0;
+    border-bottom: 1px solid grey;
+}
+
+.ticket h3{
+    display: inline-block;
+}
+
+.approve{
+    color: #5C9210;
+}
+
+.reject{ 
+    color: #DC143C;
+}

@@ -130,6 +130,13 @@ class App extends Component {
                   )}
                 />
                 <Route
+                  path="/location/checking/:locationId"
+                  exact
+                  render={props => (
+                    <EditLocation {...props} type="check" />
+                  )}
+                />
+                <Route
                   path='/districts/edit/:districtId'
                   exact
                   render={props => (

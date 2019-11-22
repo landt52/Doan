@@ -22,6 +22,15 @@ router
     locationController.createLocation
   );
 
+router
+  .route('/isPending')
+  .get(
+    authController.authorize,
+    authController.checkCookies,
+    authController.restrict(Role.Admin),
+    locationController.getPendingLocation
+  );
+
 router.route('/type/:locationType').get(locationController.getLocationsByType);
 
 router.route('/types/types').get(locationController.getLocationTypes);
@@ -31,6 +40,24 @@ router
     .get(locationController.getLocationInfo)
     .patch(authController.authorize, authController.checkCookies, locationController.updateLocation)
     .delete(authController.authorize, authController.checkCookies, locationController.deleteLocation);
+
+router
+  .route('/approve/:locationId')
+    .patch(
+      authController.authorize,
+      authController.checkCookies,
+      authController.restrict(Role.Admin),
+      locationController.approveLocation
+    );
+
+router
+  .route('/reject/:locationId')
+    .delete(
+      authController.authorize,
+      authController.checkCookies,
+      authController.restrict(Role.Admin),
+      locationController.rejectLocation
+    );
 
 router.get('/:distance/center/:latlng', locationController.getLocationWithin);
 

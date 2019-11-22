@@ -26,6 +26,9 @@ export const loadMapOfVN = () => dispatch => {
     axios(`/api/vnBoundaries`)
     .then(res => dispatch(loadMapOfVNSuccess(res)))
     .catch(err => dispatch(loadMapOfVNFailed(err)))
+    axios(`/api/icons`)
+      .then(res => dispatch(loadIconsSuccess(res)))
+      .catch(err => dispatch(loadIconsFailed(err)));
 };
 
 export const loadDistrictDataStart = () => {
@@ -55,11 +58,28 @@ export const loadDistrictsData = (values, provinceName) => dispatch => {
     axios(`/api/vnBoundaries/${provinceName}`)
     .then(res => dispatch(loadDistrictDataSuccess(values, res)))
     .catch(err => dispatch(loadDistrictDataFailed(err)))
+    axios(`/api/icons`)
+      .then(res => dispatch(loadIconsSuccess(res)))
+      .catch(err => dispatch(loadIconsFailed(err)));
 };
 
 export const filterDistrictsData = (value) => {
     return {
         type: actionTypes.FILTER_DISTRICTS_DATA,
         filterData: value
+    }
+}
+
+export const loadIconsSuccess = (icons) => {
+    return {
+        type: actionTypes.LOAD_ICONS_SUCCESS,
+        icons: icons.data.icons
+    }
+}
+
+export const loadIconsFailed = (err) => {
+    return {
+        type: actionTypes.LOAD_ICONS_FAILED,
+        err
     }
 }

@@ -177,6 +177,16 @@ class Map extends Component {
       });
     }
 
+    const bounds = layer.getBounds();
+    const center = bounds.getCenter();
+    L.marker(center, {
+      icon: L.icon({
+        iconUrl: `http://localhost:5000/${this.props.icons[this.props.filterData]}.png`,
+        iconSize: [20, 20]
+      }),
+      title: feature.properties.name
+    }).addTo(this.layerGroup);
+
     // let max_area_polygon;
     // let max_area = 0;
 
@@ -191,7 +201,7 @@ class Map extends Component {
     // }
     // const center = centerOfMass(max_area_polygon);
     // layer
-    //    .bindTooltip(feature.properties.name, { permanent: true, direction: 'center', className: classes.labelstyle })
+    //    .bindTooltip(feature.properties.name, { permanent: true, direction: 'center'})
     //    .openTooltip();
   };
 
@@ -257,7 +267,8 @@ const mapStateToProps = state => {
     loading: state.map.loading,
     filterData: state.map.filterData,
     vnfetched: state.map.vnfetched,
-    fetched: state.map.fetched
+    fetched: state.map.fetched,
+    icons: state.map.icons
   };
 };
 

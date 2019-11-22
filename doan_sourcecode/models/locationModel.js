@@ -56,7 +56,11 @@ const locationSchema = new mongoose.Schema(
       rating: {
         type: Number,
         default: 0,
-        set: rating => Math.round(rating * 10) / 10 
+        set: rating => Math.round(rating * 10) / 10
+      },
+      isPending: {
+        type: Boolean,
+        default: true
       }
     }
   },
@@ -66,11 +70,17 @@ const locationSchema = new mongoose.Schema(
   }
 );
 
-locationSchema.index({location: '2dsphere'});
+locationSchema.index({ location: '2dsphere', user: 1 });
 
 locationSchema.virtual('reviews', {
   ref: 'Review',
   foreignField: 'location',
+  localField: '_id'
+})
+
+locationSchema.virtual('users', {
+  ref: 'User',
+  foreignField: 'writer',
   localField: '_id'
 })
 

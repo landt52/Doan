@@ -33,7 +33,8 @@ class LocationPage extends Component {
   };
 
   componentDidMount() {
-    axios(`/api/location/${this.props.id}`).then(res => {
+    let id = this.props.match.params.locationId;
+    axios(`/api/location/${id}`).then(res => {
       const {
         address,
         images,

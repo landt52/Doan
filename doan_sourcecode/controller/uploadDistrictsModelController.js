@@ -4,6 +4,7 @@ const fs = require('fs');
 const {promisify} = require('util');
 const District = require('./../models/districtModel');
 const AppError = require('./../Error');
+const AttributeIcon = require('./../models/attributeType');
 
 const unlink = promisify(fs.unlink);
 
@@ -62,6 +63,29 @@ exports.uploadDistrictsModel = async (req, res, next) => {
               const key1 = 'Mã huyện';
               const key2 = 'Mã tỉnh';
               const {[key1]: _,[key2]: __, ...newObj} = obj;
+              const attributeIcon = Object.keys(newObj).reduce((acc, cur) => {
+                return {
+                  ...acc,
+                  [cur]: 'Earth'
+                }
+              }, {});
+
+              const attributes = await AttributeIcon.findById('5dd75b7aa17ec1334cfe6167');
+              const newAttribute = {}
+              Object.keys(attributeIcon).forEach(attr => {
+                if (attributes.icon[attr] === undefined) newAttribute[attr] = 'Earth'
+              });
+
+              const newAttributeIcon = Object.assign(
+                {},
+                attributes.icon,
+                newAttribute
+              );
+
+              await AttributeIcon.findByIdAndUpdate('5dd75b7aa17ec1334cfe6167', {
+                icon: newAttributeIcon
+              });
+
               await District.findByIdAndUpdate(req.params.districtID, {data: newObj}, {
                   new: true
               })

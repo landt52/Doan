@@ -5,24 +5,24 @@ import NavigationItem from './NavigationItem/NavigationItem';
 const navigationItems = props => (
   <ul className={classes.NavigationItems}>
     <NavigationItem link='/' exact>
-      Provinces
+      Tỉnh - Thành phố
     </NavigationItem>
     {props.role === 'Admin' ? <NavigationItem link='/districts' exact>
-      Districts
+      Quận - Huyện
     </NavigationItem> : null}
     <NavigationItem link='/map' exact>
-      Map
+      Bản đồ Việt Nam
     </NavigationItem>
     <NavigationItem link='/aqi' exact>
-      Aqi-Weather
+      Aqi - Thời tiết
     </NavigationItem>
     <NavigationItem link='/location' exact>
-      Location
+      Du lịch
     </NavigationItem>
     {props.isAuth ? (
       <React.Fragment>
         <NavigationItem link='/logout' exact>
-          Logout
+          Đăng xuất
         </NavigationItem>
         <NavigationItem link='/user' exact>
           <img src={props.photo} alt="avatar" className={classes.avatar} />
@@ -30,7 +30,7 @@ const navigationItems = props => (
       </React.Fragment>
     ) : (
       <NavigationItem link='/login' exact>
-        Login
+        Đăng nhập
       </NavigationItem>
     )}
   </ul>

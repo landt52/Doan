@@ -30,6 +30,7 @@ mongoose.connect(DB, {useNewUrlParser: true, useCreateIndex: true, useFindAndMod
 })
 
 const boundaryRouter = require('./routes/boundaryRoutes');
+const iconRouter = require('./routes/iconsRoutes');
 const citiesNameRouter = require('./routes/citiesNameRoutes');
 const districtsNameRouter = require('./routes/districtsNameRoutes');
 const uploadDistrictsInfoRouter = require('./routes/uploadDistrictsInfoRoutes');
@@ -96,6 +97,7 @@ weatherJob.start();
 weatherUpdateJob.start();
 
 app.use('/api/vnBoundaries', boundaryRouter);
+app.use('/api/icons', iconRouter);
 app.use('/api/citiesName', citiesNameRouter);
 app.use('/api/districtsName', districtsNameRouter);
 app.use('/api/districts', uploadDistrictsInfoRouter);

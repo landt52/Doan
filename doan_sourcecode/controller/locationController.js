@@ -1,6 +1,7 @@
 const Location = require('./../models/locationModel');
 const Review = require('./../models/reviewModel');
 const LocationType = require('./../models/typeModel');
+const Ticket = require('./../models/ticketModel');
 const multer = require('multer');
 const fs = require('fs');
 const AppError = require('./../Error');
@@ -40,12 +41,15 @@ const uploadPics = multer({
 }).array('pics', 4);
 
 exports.getAllLocations = catchAsync(async (req, res, next) => {
-  const locationsData = await Location.find({}, {
-    "location.rating": 1,
-    "location.name": 1,
-    "location.cover": 1,
-    "location.writer": 1
-  });
+  const locationsData = await Location.find(
+    { 'location.isPending': { $ne: true } },
+    {
+      'location.rating': 1,
+      'location.name': 1,
+      'location.cover': 1,
+      'location.writer': 1
+    }
+  );
 
   if(!locationsData) return next(new AppError('Không tìm thấy địa điểm', 404))
 
@@ -57,10 +61,35 @@ exports.getAllLocations = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.getPendingLocation = catchAsync(async (req, res, next) => {
+  const pendingLocations = await Location.find(
+      { 'location.isPending': true },
+      {
+        'location.rating': 1,
+        'location.name': 1,
+        'location.cover': 1,
+        'location.writer': 1
+      }
+    ).populate({
+      path: 'location.writer',
+      select: 'userName'
+    });
+
+    if(!pendingLocations) return next(new AppError('Không tìm thấy địa điểm', 404))
+
+    res.status(200).json({
+      status: 'success',
+      pendingLocations
+    });
+});
+
 exports.getLocationsByType = catchAsync(async (req, res, next) => {
   const type = req.params.locationType;
   const locationsData = await Location.find(
-    { 'location.locationType.locationType': type },
+    {
+      'location.locationType.locationType': type,
+      'location.isPending': { $ne: true }
+    },
     {
       'location.type': 1,
       'location.rating': 1,
@@ -72,7 +101,7 @@ exports.getLocationsByType = catchAsync(async (req, res, next) => {
       'location.phone': 1,
       'location.website': 1
     }
-  ).populate("reviews")
+  ).populate('reviews');
 
   const locations = locationsData.map(row => ({
     type: row.location.type,
@@ -128,26 +157,47 @@ exports.createLocation = catchAsync(async (req, res, next) => {
         const [cover, ...pics] = images;
         const picsURL = pics.map(pic => pic.secure_url);
         const picsID = pics.map(pic => pic.public_id);
-
-        data = {
-          location: {
-            type: 'Point',
-            coordinates: [+lng, +lat],
-            name,
-            cover: cover.secure_url,
-            coverId: cover.public_id,
-            locationType,
-            address,
-            summary,
-            phone,
-            website,
-            hours: JSON.parse(hours),
-            writer,
-            images: picsURL,
-            imageID: picsID
-          }
+        if(req.user.role === Role.Admin){
+          data = {
+            location: {
+              type: 'Point',
+              coordinates: [+lng, +lat],
+              name,
+              cover: cover.secure_url,
+              coverId: cover.public_id,
+              locationType,
+              address,
+              summary,
+              phone,
+              website,
+              hours: JSON.parse(hours),
+              writer,
+              images: picsURL,
+              imageID: picsID,
+              isPending: false
+            }
+          };
+        }else{
+          data = {
+            location: {
+              type: 'Point',
+              coordinates: [+lng, +lat],
+              name,
+              cover: cover.secure_url,
+              coverId: cover.public_id,
+              locationType,
+              address,
+              summary,
+              phone,
+              website,
+              hours: JSON.parse(hours),
+              writer,
+              images: picsURL,
+              imageID: picsID
+            }
+          };
         }
-
+      
         await Location.create(data)
 
         const deletePromise = req.files.map(
@@ -197,28 +247,56 @@ exports.updateLocation = catchAsync(async (req, res, next) => {
 
   const checkAuth = await Location.findOne({ _id: req.params.locationId }, {"location.writer": 1});
   if(req.user.role !== Role.Admin){
-    if (checkAuth.location.writer !== req.user._id)
+    if (checkAuth.location.writer.toString() !== req.user._id.toString())
       return next(new AppError('Bạn không có quyền thực hiện điều này', 404));
   }
 
-  const location = await Location.findOneAndUpdate(
-    { _id: req.params.locationId},
-    { $set: {
-      "location.coordinates": [+lng, +lat],
-      "location.name": name,
-      "location.locationType": locationType,
-      "location.address": address,
-      "location.summary": summary,
-      "location.phone": phone,
-      "location.website": website,
-      "location.hours": JSON.parse(hours)
-    }},
-    {
-      new: true,
-      runValidators: true,
-      upsert: true
-    }
-  );
+  let location;
+
+  if(req.user.role === Role.Admin){
+    location = await Location.findOneAndUpdate(
+      { _id: req.params.locationId },
+      {
+        $set: {
+          'location.coordinates': [+lng, +lat],
+          'location.name': name,
+          'location.locationType': locationType,
+          'location.address': address,
+          'location.summary': summary,
+          'location.phone': phone,
+          'location.website': website,
+          'location.hours': JSON.parse(hours)
+        }
+      },
+      {
+        new: true,
+        runValidators: true,
+        upsert: true
+      }
+    );
+  }else{
+    location = await Location.findOneAndUpdate(
+      { _id: req.params.locationId },
+      {
+        $set: {
+          'location.coordinates': [+lng, +lat],
+          'location.name': name,
+          'location.locationType': locationType,
+          'location.address': address,
+          'location.summary': summary,
+          'location.phone': phone,
+          'location.website': website,
+          'location.hours': JSON.parse(hours),
+          'location.isPending': true
+        }
+      },
+      {
+        new: true,
+        runValidators: true,
+        upsert: true
+      }
+    );
+  }
 
   if(!location) return next(new AppError('Không tìm thấy địa điểm', 404));
 
@@ -236,11 +314,14 @@ exports.deleteLocation = catchAsync(async (req, res, next) => {
     { 'location.writer': 1 }
   );
   if (req.user.role !== Role.Admin) {
-    if (checkAuth.location.writer !== req.user._id)
+    if (checkAuth.location.writer.toString() !== req.user._id.toString())
       return next(new AppError('Bạn không có quyền thực hiện điều này', 404));
   }
 
   const location = await Location.findById(req.params.locationId).populate('reviews');
+
+  if (!location) return next(new AppError('Không tìm thấy địa điểm', 404));
+  
   const reviewsID = location.reviews.map(review => review.id);
   if(location.location.imageID.length !== 0){
     const deletePromise = location.location.imageID.map(
@@ -270,7 +351,76 @@ exports.deleteLocation = catchAsync(async (req, res, next) => {
   await cloudinary.uploader.destroy(location.location.coverId);
   await Location.findByIdAndDelete(req.params.locationId);
 
-  if(!location) return next(new AppError('Không tìm thấy địa điểm', 404));
+  res.status(204).json({
+    status: 'success',
+    data: null
+  });
+});
+
+exports.approveLocation = catchAsync(async (req, res, next) => {
+  const location = await Location.findByIdAndUpdate(req.params.locationId, {
+    $set: {
+      "location.isPending": false
+    }
+  })
+
+  const ticketData = {
+    user: req.body.writer,
+    locationName: req.body.name,
+    ticketType: 'Approve'
+  }
+
+  await Ticket.create(ticketData);
+
+  res.status(200).json({
+    status: 'success'
+  })
+});
+
+exports.rejectLocation = catchAsync(async (req, res, next) => {
+  const location = await Location.findById(req.params.locationId).populate(
+    'reviews'
+  );
+  if (!location) return next(new AppError('Không tìm thấy địa điểm', 404));
+
+  const reviewsID = location.reviews.map(review => review.id);
+  if (location.location.imageID.length !== 0) {
+    const deletePromise = location.location.imageID.map(
+      async id => await cloudinary.uploader.destroy(id)
+    );
+    await Promise.all(deletePromise);
+  }
+
+  if (reviewsID.length !== 0) {
+    const deleteReview = reviewsID.map(
+      async reviewID => await Review.findByIdAndDelete(reviewID)
+    );
+    await Promise.all(deleteReview);
+
+    const deleteReviewImage = location.reviews.map(review => review.imageID);
+
+    if (deleteReviewImage.length !== 0) {
+      const deleteReviewImagePromises = deleteReviewImage
+        .reduce((cur, acc) => cur.concat(acc), [])
+        .map(async id => await cloudinary.uploader.destroy(id));
+
+      await Promise.all(deleteReviewImagePromises);
+    }
+  }
+
+  await cloudinary.uploader.destroy(location.location.coverId);
+  await Location.findByIdAndDelete(req.params.locationId);
+
+  if(req.body.writer.toString() !== req.user._id.toString()){
+    const ticketData = {
+      user: req.body.writer,
+      locationName: req.body.name,
+      ticketType: 'Reject',
+      reason: req.body.reason
+    };
+
+    await Ticket.create(ticketData);
+  }
 
   res.status(204).json({
     status: 'success',

@@ -115,8 +115,14 @@ class LocationUpload extends Component {
       Sat: ['00:00', '00:00'],
       Sun: ['00:00', '00:00']
     },
-    formIsValid: false
+    formIsValid: false,
+    mode: '',
+    deleteReason: ''
   };
+
+  componentDidMount(){
+    this.setState({mode: this.props.match.path.split('/')[2]})
+  }
 
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.id !== this.props.id) {
@@ -172,6 +178,10 @@ class LocationUpload extends Component {
         hours: newHours,
         formIsValid: true
       });
+
+      if(this.state.mode === 'checking'){
+        this.setState({selectedCoverURL: this.props.locations.cover, selectedPicsURL: this.props.locations.images})
+      }
     }
   }
 
@@ -395,6 +405,51 @@ class LocationUpload extends Component {
     this.setState({ hours: newTime });
   };
 
+  approve = async (e) => {
+    e.preventDefault();
+    if(document.activeElement.innerText === 'Approve'){
+      try {
+        await axios(
+          `/api/location/approve/${this.props.match.params.locationId}`,
+          {
+            method: 'PATCH',
+            data: {
+              name: this.props.locations.name,
+              writer: this.props.locations.writer
+            }
+          }
+        );
+        toast.success('Đồng ý địa điểm');
+        this.props.history.goBack();
+      } catch ({response}) {
+        toast.error(response.data.message);
+      }
+    }
+    if(document.activeElement.innerText === 'Delete'){
+      try {
+        const reason = prompt("Reason for not approve location");
+        if(reason === null || reason === "") return;
+        else {
+          await axios(
+            `/api/location/reject/${this.props.match.params.locationId}`,
+            {
+              method: 'DELETE',
+              data: {
+                name: this.props.locations.name,
+                writer: this.props.locations.writer,
+                reason
+              }
+            }
+          );
+          toast.success('Loại địa điểm')
+          this.props.history.goBack();
+        }
+      } catch ({response}) {
+        toast.error(response.data.message)
+      }
+    }
+  }
+
   render() {
     let previewCover, previewImages;
     const timePicker = Object.entries(this.state.hours).map(day => (
@@ -419,8 +474,8 @@ class LocationUpload extends Component {
         config: this.state.forms[key]
       });
     }
-
-    let form = forms.map(form => (
+    let form;
+    form = forms.map(form => (
       <CustomInput
         key={form.id}
         id={form.id}
@@ -434,7 +489,23 @@ class LocationUpload extends Component {
       />
     ));
 
-    previewCover = this.state.selectedCover ? (
+    if(this.state.mode === 'checking'){
+      form = forms.map(form => (
+        <CustomInput
+          key={form.id}
+          id={form.id}
+          elementType={form.config.elementType}
+          elementConfig={form.config.elementConfig}
+          value={form.config.value}
+          invalid={!form.config.valid}
+          shouldValidate={form.config.validation}
+          touched={form.config.touched}
+          readOnly
+        />
+      ));
+    }
+
+    previewCover = this.state.selectedCoverURL ? (
       <div style={{ display: 'flex', width: '100%' }}>
           <ModalImage
             image={this.state.selectedCoverURL}
@@ -450,6 +521,7 @@ class LocationUpload extends Component {
         <div style={{ display: 'flex', width: '100%' }}>
           {this.state.selectedPicsURL.map(url => (
             <ModalImage
+              key={url}
               image={url}
               alt=''
               ratio={`3:2`}
@@ -463,7 +535,11 @@ class LocationUpload extends Component {
       <div className={classes.locationUpload}>
         <form
           onSubmit={
-            this.props.mode === 'edit' ? this.editLocation : this.createLocation
+            this.state.mode === 'checking'
+              ? this.approve
+              : this.props.mode === 'edit'
+              ? this.editLocation
+              : this.createLocation
           }
         >
           <CustomInput
@@ -482,6 +558,12 @@ class LocationUpload extends Component {
           />
           {form}
           {timePicker}
+          {this.state.mode === 'checking' ? (
+            <React.Fragment>
+              {previewCover}
+              {previewImages}
+            </React.Fragment>
+          ) : null}
           {this.props.mode === 'edit' ? null : (
             <React.Fragment>
               <Label for='cover'>Upload cover image</Label>
@@ -508,7 +590,16 @@ class LocationUpload extends Component {
             editorState={this.state.editorState}
             image={false}
           />
-          {this.props.mode === 'edit' ? (
+          {this.state.mode === 'checking' ? (
+            <React.Fragment>
+              <Button btnType='Success' onClick={this.approveLocation}>
+                Approve
+              </Button>
+              <Button btnType='Danger' onClick={this.reject}>
+                Delete
+              </Button>
+            </React.Fragment>
+          ) : this.props.mode === 'edit' ? (
             <Button btnType='Success' disabled={!this.state.formIsValid}>
               Edit
             </Button>

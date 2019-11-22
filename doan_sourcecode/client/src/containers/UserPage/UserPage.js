@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import Input from '../../components/Input/Input';
+import CustomInput from '../../components/Input/Input';
 import Button from '../../components/Button/Button';
 import classes from './UserPage.css';
 import { toast } from 'react-toastify';
 import buttonClasses from '../../components/AddButton/AddButton.css';
+import { FormGroup, Input } from 'reactstrap';
 import Spinner from '../../components/Spinner/Spinner';
 import {Link} from 'react-router-dom';
 import Rating from '@material-ui/lab/Rating';
@@ -13,6 +14,8 @@ import {connect} from 'react-redux';
 import UserCard from '../../components/UserCard/UserCard';
 import Pagination from '../../components/Pagination/Pagination';
 import SearchBar from '../../components/SearchBar/SearchBar';
+import Tickets from '../../components/Tickets/Tickets';
+import ManageIcons from '../ManageIcons/ManageIcons';
 
 class UserPage extends Component {
   constructor(props) {
@@ -100,12 +103,14 @@ class UserPage extends Component {
       allLocations: null,
       allReviews: null,
       currentPage: 1,
-      itemsPerPage: 1,
+      itemsPerPage: 20,
       filterLocation: null,
       filterAllLocation: null,
       filterUser: null,
       filterReview: null,
-      filterAllReview: null
+      filterAllReview: null,
+      pendingLocations: null,
+      tickets: null
     };
     this.indexOfLastItem = this.state.currentPage * this.state.itemsPerPage;
     this.indexOfFirstItem = this.indexOfLastItem - this.state.itemsPerPage;
@@ -114,7 +119,9 @@ class UserPage extends Component {
   }
 
   getCurrentItems = items => {
+    if(items.length > 1 && items !== null)
     return items.slice(this.indexOfFirstItem, this.indexOfLastItem);
+    else return [...items]
   };
 
   componentDidMount() {
@@ -135,6 +142,21 @@ class UserPage extends Component {
         this.setState({ forms: newFormsData, photo: res.data.data.user.photo });
       })
       .catch(err => toast.error(err.response.data.message));
+    axios('/api/user/myTicket')
+      .then(res => {
+        this.setState({tickets: res.data.tickets});
+      })
+    if (this.props.role === 'Admin') {
+      axios('/api/location/isPending')
+        .then(res => {
+          this.setState({
+            pendingLocations: res.data.pendingLocations
+          });
+        })
+        .catch(({ response }) => {
+          toast.err(response.data.message);
+        });
+    }
   }
 
   checkValidity(value, rules) {
@@ -327,10 +349,70 @@ class UserPage extends Component {
         myLocations: remainLocations,
         filterLocation: remainLocations,
         allLocations: remainAllLocations,
-        filterAllLocation: remainLocations,
+        filterAllLocation: remainAllLocations,
         currentPage: 1
       });
       toast.success('Xóa địa điểm thành công');
+    } catch ({ response }) {
+      toast.error(response.data.message);
+    }
+  };
+
+  loadTickets = () => {
+    this.setState({ mode: 'tickets' });
+  }
+
+  acceptTicket = async (e, id) => {
+    try {
+      await axios(`/api/user/myTicket/${id}`, {
+        method: 'DELETE'
+      })
+      const remainTickets =
+        this.state.tickets !== null
+          ? this.state.tickets.filter(ticket => ticket._id !== id)
+          : null;
+      this.setState({tickets: remainTickets});
+    } catch ({response}) {
+      toast.error(response.data.message);
+    }
+  }
+
+  deleteLocationAdmin = async (id, writer, name) => {
+    try {
+      const reason = prompt('Reason to delete this location');
+
+      if(reason === null || reason === "") return;
+      else{
+          await axios(
+            `/api/location/reject/${id}`,
+            {
+              method: 'DELETE',
+              data: {
+                name,
+                writer,
+                reason
+              }
+            }
+          );
+          const remainLocations =
+            this.state.myLocations !== null
+              ? this.state.myLocations.filter(location => location.id !== id)
+              : null;
+          const remainAllLocations =
+            this.state.allLocations !== null
+              ? this.state.allLocations.filter(location => location.id !== id)
+              : null;
+
+          this.setState({
+            myLocations: remainLocations,
+            filterLocation: remainLocations,
+            allLocations: remainAllLocations,
+            filterAllLocation: remainAllLocations,
+            currentPage: 1
+          });
+          toast.success('Xóa địa điểm thành công');
+      }
+     
     } catch ({ response }) {
       toast.error(response.data.message);
     }
@@ -478,6 +560,10 @@ class UserPage extends Component {
     }
   };
 
+  loadMapIcons = () => {
+    this.setState({mode: 'manage icons'})
+  }
+
   paginate = pageNumber => {
     this.setState({ currentPage: pageNumber });
   };
@@ -603,7 +689,7 @@ class UserPage extends Component {
     }
 
     let form = forms.map(form => (
-      <Input
+      <CustomInput
         key={form.id}
         label={form.config.elementConfig.placeholder}
         elementType={form.config.elementType}
@@ -683,6 +769,26 @@ class UserPage extends Component {
           >
             My Reviews
           </button>
+          <button
+            style={{
+              letterSpacing: 0,
+              width: '100%',
+              background: 'transparent'
+            }}
+            className={[
+              buttonClasses.button,
+              buttonClasses.buttonNormal,
+              buttonClasses.fromLeft
+            ].join(' ')}
+            onClick={this.loadTickets}
+          >
+            Approval / Rejection
+            {this.state.tickets && this.state.tickets.length !== 0 ? (
+              <span className={classes.pendingCount}>
+                {this.state.tickets.length}
+              </span>
+            ) : null}
+          </button>
           {this.props.role === 'Admin' ? (
             <React.Fragment>
               <button
@@ -713,7 +819,13 @@ class UserPage extends Component {
                 ].join(' ')}
                 onClick={this.loadAllLocations}
               >
-                Manage Locations
+                Manage Locations{' '}
+                {this.state.pendingLocations &&
+                this.state.pendingLocations.length !== 0 ? (
+                  <span className={classes.pendingCount}>
+                    {this.state.pendingLocations.length}
+                  </span>
+                ) : null}
               </button>
               <button
                 style={{
@@ -729,6 +841,21 @@ class UserPage extends Component {
                 onClick={this.loadAllReviews}
               >
                 Manage Reviews
+              </button>
+              <button
+                style={{
+                  letterSpacing: 0,
+                  width: '100%',
+                  background: 'transparent'
+                }}
+                className={[
+                  buttonClasses.button,
+                  buttonClasses.buttonNormal,
+                  buttonClasses.fromLeft
+                ].join(' ')}
+                onClick={this.loadMapIcons}
+              >
+                Manage Map Icons
               </button>
             </React.Fragment>
           ) : null}
@@ -841,6 +968,32 @@ class UserPage extends Component {
               <SearchBar changed={this.filterReview} />
             )}
           </div>
+        ) : this.state.mode === 'tickets' ? (
+          <div style={{ width: '100%' }}>
+            {!this.state.tickets ? (
+              <Spinner />
+            ) : this.state.tickets.length !== 0 ? (
+              <React.Fragment>
+                {this.getCurrentItems(this.state.tickets).map(ticket => (
+                  <Tickets
+                    key={ticket._id}
+                    ticket={ticket}
+                    acceptTicket={this.acceptTicket}
+                  />
+                ))}
+                <Pagination
+                  itemsPerPage={this.state.itemsPerPage}
+                  totalItems={this.state.tickets.length}
+                  paginate={this.paginate}
+                  currentPage={this.state.currentPage}
+                />
+              </React.Fragment>
+            ) : (
+              this.state.tickets.length === 0 && (
+                <h2 className={classes.notFound}>Không có thông báo nào</h2>
+              )
+            )}
+          </div>
         ) : this.state.mode === 'manage user' ? (
           <div style={{ width: '100%' }}>
             {!this.state.users ? (
@@ -877,6 +1030,21 @@ class UserPage extends Component {
             ) : this.state.allLocations.length !== 0 ? (
               <React.Fragment>
                 <SearchBar changed={this.filterLocation} />
+                <FormGroup>
+                  <Input
+                    type='select'
+                    id='selectType'
+                    style={{ width: '30%' }}
+                    onChange={e => {
+                      this.setState({
+                        mode: e.target.value.toLowerCase()
+                      });
+                    }}
+                  >
+                    <option>Manage Location</option>
+                    <option>Pending Locations</option>
+                  </Input>
+                </FormGroup>
                 {this.getCurrentItems(this.state.filterAllLocation).map(
                   location => (
                     <div key={location.id} className={classes.locationCard}>
@@ -904,7 +1072,13 @@ class UserPage extends Component {
                         </Link>
                         <button
                           className={buttonClasses.buttonSmallDelete}
-                          onClick={() => this.deleteLocation(location.id)}
+                          onClick={() =>
+                            this.deleteLocationAdmin(
+                              location.id,
+                              location.location.writer,
+                              location.location.name
+                            )
+                          }
                         >
                           Delete
                         </button>
@@ -925,12 +1099,92 @@ class UserPage extends Component {
                 />
               </React.Fragment>
             ) : this.state.myLocations === null ? (
-              <h2 className={classes.notFound}>Không có địa điểm nào</h2>
+              <React.Fragment>
+                <h2 className={classes.notFound}>Không có địa điểm nào</h2>
+                <FormGroup>
+                  <Input
+                    type='select'
+                    id='selectType'
+                    style={{ width: '30%' }}
+                    onChange={e => {
+                      this.setState({
+                        mode: e.target.value.toLowerCase()
+                      });
+                    }}
+                  >
+                    <option>Manage Location</option>
+                    <option>Pending Locations</option>
+                  </Input>
+                </FormGroup>
+              </React.Fragment>
             ) : (
               <SearchBar changed={this.filterLocation} />
             )}
           </div>
-        ) : (
+        ) : this.state.mode === 'pending locations' ? (
+          <div style={{ width: '100%' }}>
+            {!this.state.pendingLocations ? (
+              <Spinner />
+            ) : this.state.pendingLocations.length !== 0 ? (
+              <React.Fragment>
+                <FormGroup>
+                  <Input
+                    type='select'
+                    id='selectType'
+                    style={{ width: '30%' }}
+                    onChange={e => {
+                      this.setState({
+                        mode: e.target.value.toLowerCase()
+                      });
+                    }}
+                  >
+                    <option>Pending Locations</option>
+                    <option>Manage Location</option>
+                  </Input>
+                </FormGroup>
+                {this.getCurrentItems(this.state.pendingLocations).map(
+                  location => (
+                    <div key={location.id} className={classes.locationCard}>
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          flexGrow: 1
+                        }}
+                      >
+                        <p>{location.location.name}</p>
+                        <Rating value={location.location.rating} readOnly />
+                        <p>Author: {location.location.writer.userName}</p>
+                        <Link
+                          to={{ pathname: `/location/checking/${location.id}` }}
+                        >
+                          <button className={buttonClasses.buttonSmall}>
+                            Info
+                          </button>
+                        </Link>
+                      </div>
+                      <img
+                        style={{ flexBasis: '20%', width: '20%' }}
+                        src={location.location.cover}
+                        alt={location.location.name}
+                      />
+                    </div>
+                  )
+                )}
+                <Pagination
+                  itemsPerPage={this.state.itemsPerPage}
+                  totalItems={this.state.pendingLocations.length}
+                  paginate={this.paginate}
+                  currentPage={this.state.currentPage}
+                />
+              </React.Fragment>
+            ) : (
+              <h2 className={classes.notFound}>
+                Không có địa điểm nào mới được tạo
+              </h2>
+            )}
+          </div>
+        ) : this.state.mode === 'manage review ' ? (
           <div style={{ width: '100%' }}>
             {!this.state.allReviews ? (
               <Spinner />
@@ -962,6 +1216,8 @@ class UserPage extends Component {
               <SearchBar changed={this.filterReview} />
             )}
           </div>
+        ) : (
+          <ManageIcons />
         )}
       </div>
     );

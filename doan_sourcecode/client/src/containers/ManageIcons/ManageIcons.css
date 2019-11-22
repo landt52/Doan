@@ -1,0 +1,14 @@
+.manageIcons{
+    padding: 1rem;
+    width: 100%;
+}
+
+.iconsCard{
+    display: flex;
+    padding: .5rem;
+    border-bottom: 1px solid grey;
+}
+
+.iconsCard select{
+    margin-left: 1rem;
+}

@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const locationTypeSchema = mongoose.Schema({
     locationType: {
         type: String,
-        required: [true],
+        required: true,
         unique: true
     },
     icon: {

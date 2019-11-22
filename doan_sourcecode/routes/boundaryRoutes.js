@@ -5,5 +5,6 @@ const router = express.Router();
 
 router.get('/', boundaryController.getVnBoundaries);
 router.get('/:provinceBoundary', boundaryController.getProvinceBoundary);
+router.get('/icons', boundaryController.getIcons);
 
 module.exports = router;

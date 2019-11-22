@@ -4,6 +4,7 @@ const AppError = require('./../Error');
 const multer = require('multer');
 const fs = require('fs');
 const cloudinary = require('cloudinary').v2;
+const Ticket = require('./../models/ticketModel');
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_NAME,
@@ -221,3 +222,24 @@ exports.getMyReviews = catchAsync(async (req, res, next) => {
     reviews: user.reviews
   })
 });
+
+exports.getTicket = catchAsync(async (req, res, next) => {
+  const user = await User.findById(req.user._id).populate('tickets');
+  if(!user) return next(new AppError('Không tìm thấy user', 404));
+
+  res.status(200).json({
+    status: 'success',
+    tickets: user.tickets
+  })
+})
+
+exports.acceptTicket = catchAsync(async (req, res, next) => {
+  const ticket = await Ticket.findByIdAndDelete(req.params.ticketId)
+
+  if(!ticket) return next(new AppError('Không tìm thấy ticket', 404));
+
+  res.status(204).json({
+    status: 'success',
+    data: null
+  });
+})

@@ -11,7 +11,7 @@ class LocationUploadMap extends Component {
     location: null,
     lat: 0,
     lng: 0
-  }
+  };
 
   componentDidMount() {
     this.map = L.map('map', {
@@ -68,10 +68,10 @@ class LocationUploadMap extends Component {
         );
       }
     })
-      .on('waypointschanged', (e) => {
+      .on('waypointschanged', e => {
         const lat = e.waypoints[0].latLng.lat;
-        const lng = e.waypoints[0].latLng.lng
-        this.setState({lat, lng})
+        const lng = e.waypoints[0].latLng.lng;
+        this.setState({ lat, lng });
       })
       .addTo(this.map);
 
@@ -89,7 +89,7 @@ class LocationUploadMap extends Component {
         .openOn(this.map);
 
       L.DomEvent.on(startBtn, 'click', () => {
-        this.setState({lat, lng})
+        this.setState({ lat, lng });
         this.markerGroup.clearLayers();
         new L.marker(e.latlng).addTo(this.markerGroup);
         this.map.closePopup();
@@ -98,12 +98,26 @@ class LocationUploadMap extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if(prevProps.id !== this.props.id){
-      this.setState({lat: this.props.lat, lng: this.props.lng})
+    if (prevProps.id !== this.props.id) {
+      this.setState({ lat: this.props.lat, lng: this.props.lng });
+      this.addLocationGeoJson(this.props.location);
     }
   }
-  
-  
+
+  addLocationGeoJson = (geojson) => {
+    L.geoJSON(geojson, {
+      pointToLayer: (feature, latlng) => {
+        return L.marker(latlng, {
+          icon: L.icon({
+            iconUrl: `http://localhost:5000/${feature.locationType.locationType}.svg`,
+            iconSize: [40, 80]
+          }),
+          title: feature.name
+        });
+      }
+    }).addTo(this.markerGroup);
+  };
+
   createButton = (label, container) => {
     const btn = L.DomUtil.create('button', '', container);
     btn.setAttribute('type', 'button');
@@ -115,7 +129,13 @@ class LocationUploadMap extends Component {
   render() {
     return (
       <React.Fragment>
-        <LocationUpload mode={this.props.mode} lat={this.state.lat} lng={this.state.lng} id={this.props.id} locations={this.props.location}/>
+        <LocationUpload
+          mode={this.props.mode}
+          lat={this.state.lat}
+          lng={this.state.lng}
+          id={this.props.id}
+          locations={this.props.location}
+        />
         <div
           id='map'
           style={{ height: '92vh', width: '100vw', marginTop: '0px' }}

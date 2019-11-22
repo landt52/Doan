@@ -8,7 +8,8 @@ const initialState = {
   err: null,
   fetched: false,
   vnfetched: false,
-  filterData: ''
+  filterData: '',
+  icons: {}
 };
 
 const reducer = (state = initialState, action) => {
@@ -39,6 +40,14 @@ const reducer = (state = initialState, action) => {
         fetched: false,
         filterData: ''
       });
+    case actionTypes.LOAD_ICONS_SUCCESS:
+      return Object.assign({}, state, {
+        icons: action.icons
+      })
+    case actionTypes.LOAD_ICONS_FAILED:
+      return Object.assign({}, state, {
+        err: action.err
+      })
     case actionTypes.LOAD_DISTRICTS_DATA_START:
       return Object.assign({}, state, {
         err: null,

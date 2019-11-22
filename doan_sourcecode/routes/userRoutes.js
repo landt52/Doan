@@ -32,6 +32,16 @@ router.get(
   userController.getMyLocations
 );
 
+router.get('/myTicket', authController.authorize, authController.checkCookies, userController.getTicket);
+
+router
+  .route('/myTicket/:ticketId')
+  .delete(
+    authController.authorize,
+    authController.checkCookies,
+    userController.acceptTicket
+  );
+
 router.get(
   '/myReviews',
   authController.authorize,
